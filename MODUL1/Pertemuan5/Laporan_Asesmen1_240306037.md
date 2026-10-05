@@ -48,13 +48,7 @@ Fungsi keanggotaan dirancang menggunakan kombinasi kurva trapesium bahu kiri/kan
 
 **1) Label Rendah (Trapesium Bahu Kiri [0.0, 0.0, 2.0, 2.75])**
 
-**μ Rendah (x) =**
-
-<table>
-<tr><td rowspan="3" style="font-size:70px; line-height:1; vertical-align:middle; border:0;">{</td><td style="border:0;">1, jika x ≤ 2.0  </td></tr>
-<tr><td style="border:0;">(2.75 − x) / (2.75 − 2.0), jika 2.0 < x < 2.75  </td></tr>
-<tr><td style="border:0;">0, jika x ≥ 2.75</td></tr>
-</table>
+{\mu }_{\text{Rendah}}\left(x\right)=\left\{\begin{matrix}1,& x\leq 2.0 \\ \frac{2.75-x}{2.75-2.0},& 2.0\lt x\lt 2.75 \\ 0,& x\geq 2.75\end{matrix}\right.
 
 
 **2) Label Sedang (Segitiga [2.5, 3.0, 3.5])**

@@ -171,18 +171,6 @@ xychart-beta
     line [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.5,1,1]
 ```
 
-#### Grafik Fungsi Keanggotaan Variabel: Aktivitas
-
-```mermaid
-xychart-beta
-    title "Fungsi Keanggotaan Variabel: Aktivitas"
-    x-axis "Aktivitas (Jam/Minggu)" [0,4,8,12,16,20,24,28,32,36,40]
-    y-axis "Derajat Keanggotaan (μ)" 0 --> 1
-    line [1,1,1,0.5,0,0,0,0,0,0,0]
-    line [0,0,0,0,0.5,1,0.5,0,0,0,0]
-    line [0,0,0,0,0,0,0,0.5,1,1,1]
-```
-
 #### Grafik Fungsi Keanggotaan Variabel: Rekomendasi SKS
 
 ```mermaid
@@ -193,6 +181,18 @@ xychart-beta
     line [1,1,1,0.667,0.333,0,0,0,0,0,0,0,0]
     line [0,0,0,0,0.333,0.667,1,0.667,0.333,0,0,0,0]
     line [0,0,0,0,0,0,0,0,0.333,0.667,1,1,1]
+```
+
+#### Grafik Fungsi Keanggotaan Variabel: Aktivitas
+
+```mermaid
+xychart-beta
+    title "Fungsi Keanggotaan Variabel: Aktivitas "
+    x-axis "Aktivitas (Jam/Minggu)" [0,4,8,12,16,20,24,28,32,36,40]
+    y-axis "Derajat Keanggotaan (μ)" 0 --> 1
+    line [1,1,1,0.5,0,0,0,0,0,0,0]
+    line [0,0,0,0,0.5,1,0.5,0,0,0,0]
+    line [0,0,0,0,0,0,0,0.5,1,1,1]
 ```
 
 ## 4. IMPLEMENTASI PYTHON

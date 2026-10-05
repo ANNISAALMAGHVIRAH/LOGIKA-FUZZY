@@ -5,8 +5,8 @@ import numpy as np
 # =====================================================================
 # ASESMEN MODUL 1: PEMODELAN FUZZY
 # Sistem Rekomendasi Beban SKS Mahasiswa
-# Nama : Eka Yuliana Rizky
-# NIM  : 240306011
+# Nama : Annisa Almaghvirah
+# NIM  : 240306037
 # =====================================================================
 
 def trimf(x, params):

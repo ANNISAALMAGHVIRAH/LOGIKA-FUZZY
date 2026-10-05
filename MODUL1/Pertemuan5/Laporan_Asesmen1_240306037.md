@@ -2,7 +2,6 @@
 
 # PEMODELAN FUZZY
 
-GitHub: https://github.com/ANNISAALMAGHVIRAH
 
 ---
 
@@ -152,7 +151,11 @@ Fungsi keanggotaan dirancang menggunakan kombinasi kurva trapesium bahu kiri/kan
 
 ### 3.3 Ilustrasi Grafik Desain
 
-Grafik mengikuti parameter fungsi keanggotaan yang digunakan pada laporan.
+Seluruh kurva bersebelahan saling bersinggungan (overlap) tanpa celah (gap):
+	Variabel IPK: Overlap Rendah–Sedang berada pada rentang 2.50--2.75, dan Sedang–Tinggi pada rentang 3.25--3.50. 
+	Variabel Aktivitas: Overlap Lengang–Moderat berada pada rentang 12--16 jam/minggu, dan Moderat–Padat pada rentang 24--28 jam/minggu. 
+	Variabel Rekomendasi SKS: Overlap Minimal–Sedang berada pada rentang 15--17 SKS, dan Sedang–Maksimal pada rentang 19--21 SKS.
+
 
 #### Grafik Fungsi Keanggotaan Variabel: IPK
 

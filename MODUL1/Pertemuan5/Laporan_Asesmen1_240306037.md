@@ -2,14 +2,7 @@
 
 # PEMODELAN FUZZY
 
-**Annisa Almaghvirah**  
-**NIM: 240306037**  
 GitHub: https://github.com/ANNISAALMAGHVIRAH
-
-Program Studi Teknologi Informasi  
-Fakultas Dakwah dan Ilmu Komunikasi  
-Universitas Islam Negeri Mataram  
-2026
 
 ---
 

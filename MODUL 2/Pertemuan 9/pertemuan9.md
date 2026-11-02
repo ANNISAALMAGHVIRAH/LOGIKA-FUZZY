@@ -21,607 +21,864 @@
 | Komponen | Keterangan |
 |---|---|
 | Modul | Modul 2 |
-| Topik | Metode Mamdani dan Metode Defuzzifikasi |
-| Repository | LOGIKA-FUZZY/MODUL 2/Pertemuan 8 |
+| Topik | Metode Sugeno dan Tsukamoto |
+| Repository | LOGIKA-FUZZY/MODUL 2/Pertemuan 9 |
 | Tanggal | 24 Oktober 2026 |
 
 ## B. Tujuan Praktikum
 
 Setelah menyelesaikan praktikum ini, mahasiswa diharapkan mampu:
 
-1. Memahami prinsip kerja metode penalaran inferensi Mamdani (Max-Min).
-2. Melakukan proses implikasi pemotongan kurva (*clipping*) dan agregasi maksimum.
-3. Memahami dan mengimplementasikan lima metode defuzzifikasi, yaitu:
-   - Centroid (*Center of Gravity / COG*).
-   - Bisector (pembagi luas area seimbang).
-   - Mean of Maximum (MOM).
-   - Smallest of Maximum (SOM).
-   - Largest of Maximum (LOM).
-4. Mengimplementasikan sistem Mamdani menggunakan Python dan pustaka Scikit-Fuzzy.
-5. Membandingkan perbedaan dan sensitivitas nilai output dari masing-masing metode defuzzifikasi.
+1. Memahami prinsip kerja metode inferensi Takagi-Sugeno-Kang (TSK atau Sugeno) Orde 0 dan Orde 1.
+2. Memahami prinsip kerja metode inferensi Tsukamoto yang menggunakan fungsi keanggotaan monoton.
+3. Melakukan perhitungan manual untuk proses inferensi Sugeno dan Tsukamoto menggunakan teknik rata-rata terbobot (*Weighted Average*).
+4. Mengimplementasikan algoritma Sugeno dan Tsukamoto secara modular menggunakan bahasa pemrograman Python.
+5. Membandingkan karakteristik, akurasi, efisiensi komputasi, dan pemilihan metode antara Mamdani, Sugeno, dan Tsukamoto.
 
 ## C. Requirement
 
-Perangkat dan aplikasi yang digunakan dalam praktikum ini adalah:
+Perangkat lunak yang digunakan dalam praktikum ini adalah:
 
-- **Sistem Operasi:** Windows 11 Home Single Language 64-bit (10.0, Build 26100).
-- **Browser:** Google Chrome Version 130.0.6723.117 (Official Build) (64-bit).
-- **Tools:** Visual Studio Code.
-- **Bahasa Pemrograman:** Python.
-- **Library:** NumPy, Matplotlib, dan Scikit-Fuzzy.
-
-Instalasi pustaka Scikit-Fuzzy dilakukan menggunakan perintah:
-
-```bash
-pip install scikit-fuzzy
-```
+| Komponen | Keterangan |
+|---|---|
+| Sistem Operasi | Windows 11 Home Single Language 64-bit (10.0, Build 26100) |
+| Browser | Google Chrome Version 130.0.6723.117 (Official Build) (64-bit) |
+| Tools | Visual Studio Code |
 
 ## D. Dasar Teori
 
-### 1. Karakteristik Metode Mamdani
+### 1. Metode Sugeno (Takagi-Sugeno-Kang)
 
-Metode Mamdani merupakan salah satu metode inferensi fuzzy yang diperkenalkan oleh Ebrahim Mamdani pada tahun 1975. Metode ini banyak digunakan karena proses penalarannya mudah dipahami dan menggunakan aturan berbentuk IF-THEN.
+Metode Sugeno diperkenalkan oleh Takagi, Sugeno, dan Kang pada tahun 1985. Pada metode ini, konsekuen atau bagian THEN dari aturan fuzzy bukan berupa himpunan fuzzy, melainkan nilai tegas (*crisp*) atau persamaan matematika.
 
-Beberapa karakteristik utama metode Mamdani adalah:
+Metode Sugeno memiliki dua jenis, yaitu:
 
-1. **Konsekuen aturan:** Berupa himpunan fuzzy, bukan fungsi linear atau konstanta.
-2. **Implikasi:** Menggunakan operator Minimum (MIN) untuk memotong fungsi keanggotaan output berdasarkan nilai firing strength atau \(\alpha\)-predikat.
-3. **Agregasi:** Menggabungkan seluruh hasil implikasi aturan menggunakan operator Maksimum (MAX).
-4. **Defuzzifikasi:** Mengubah hasil agregasi fuzzy menjadi nilai tegas (*crisp output*) menggunakan metode tertentu.
+#### a. Sugeno Orde 0 (Konstanta)
 
-Rumus agregasi pada metode Mamdani adalah:
+Pada Sugeno Orde 0, konsekuen setiap aturan berbentuk nilai konstanta skalar.
+
+Bentuk aturan:
 
 \[
-\mu_{\text{Agg}}(z)=
-\max_i
-\left[
-\min\left(\alpha_i,\mu_{C_i}(z)\right)
-\right]
+\text{IF }x\text{ is }A_i
+\text{ AND }y\text{ is }B_i
+\text{ THEN }z_i=k_i
 \]
 
 Keterangan:
 
-- \(\mu_{\text{Agg}}(z)\) = derajat keanggotaan hasil agregasi.
-- \(\alpha_i\) = nilai firing strength aturan ke-i.
-- \(\mu_{C_i}(z)\) = fungsi keanggotaan output dari aturan ke-i.
-- MIN = operator untuk proses implikasi.
-- MAX = operator untuk proses agregasi.
+- \(x\) dan \(y\) = variabel input.
+- \(A_i\) dan \(B_i\) = himpunan fuzzy.
+- \(z_i\) = nilai output aturan.
+- \(k_i\) = nilai konstanta.
 
-### 2. Ragam Metode Defuzzifikasi
+#### b. Sugeno Orde 1 (Fungsi Linear)
 
-Setelah proses agregasi menghasilkan satu kurva fuzzy pada semesta output \(Z\), diperlukan proses defuzzifikasi untuk memperoleh satu nilai crisp yang mewakili hasil tersebut.
+Pada Sugeno Orde 1, konsekuen berupa persamaan linear yang melibatkan variabel input.
 
-Terdapat lima metode defuzzifikasi yang digunakan dalam praktikum ini.
+Bentuk aturan:
 
-#### a. Centroid (Center of Gravity / COG)
+\[
+\text{IF }x\text{ is }A_i
+\text{ AND }y\text{ is }B_i
+\text{ THEN }z_i=p_ix+q_iy+r_i
+\]
 
-Centroid merupakan metode yang menghitung titik pusat atau titik keseimbangan dari seluruh luas daerah hasil agregasi fuzzy. Metode ini mempertimbangkan seluruh bentuk kurva sehingga hasilnya cenderung lebih halus.
+Keterangan:
+
+- \(p_i\), \(q_i\), dan \(r_i\) = koefisien persamaan.
+- \(x\) dan \(y\) = variabel input.
+- \(z_i\) = nilai output dari aturan ke-i.
+
+#### c. Defuzzifikasi Sugeno dengan Rata-Rata Terbobot
+
+Karena setiap aturan menghasilkan nilai tegas, metode Sugeno tidak memerlukan proses integrasi kurva seperti pada metode Mamdani. Nilai akhir diperoleh menggunakan rata-rata terbobot (*Weighted Average*).
 
 Rumus:
 
 \[
-z^*_{\text{Centroid}}=
-\frac{\int z\cdot\mu_{\text{Agg}}(z)\,dz}
-{\int\mu_{\text{Agg}}(z)\,dz}
+z^*=
+\frac{\sum_{i=1}^{N}\alpha_i z_i}
+{\sum_{i=1}^{N}\alpha_i}
 \]
 
-Metode ini cocok digunakan ketika keputusan ingin mempertimbangkan seluruh daerah hasil agregasi.
+Keterangan:
 
-#### b. Bisector
+- \(z^*\) = hasil akhir defuzzifikasi.
+- \(\alpha_i\) = nilai firing strength setiap aturan.
+- \(z_i\) = nilai output dari setiap aturan.
+- \(N\) = jumlah aturan yang aktif.
 
-Bisector merupakan metode yang mencari titik yang membagi luas daerah hasil agregasi menjadi dua bagian yang sama besar.
+### 2. Metode Tsukamoto
+
+Metode Tsukamoto merupakan metode inferensi fuzzy yang menggunakan konsekuen berupa himpunan fuzzy dengan fungsi keanggotaan monoton. Artinya, fungsi keanggotaan harus selalu naik atau selalu turun.
+
+Untuk mendapatkan nilai output tegas, setiap aturan mencari nilai \(z_i\) menggunakan fungsi invers berdasarkan nilai firing strength.
+
+Terdapat dua bentuk fungsi monoton yang digunakan:
+
+#### a. Fungsi Keanggotaan Monoton Naik
 
 Rumus:
 
 \[
-\int_{-\infty}^{z^*}\mu_{\text{Agg}}(z)\,dz
-=
-\int_{z^*}^{\infty}\mu_{\text{Agg}}(z)\,dz
+z_i=a+\alpha_i(b-a)
 \]
 
-Metode ini menghasilkan nilai yang membagi luas kurva fuzzy menjadi dua bagian seimbang.
-
-#### c. Mean of Maximum (MOM)
-
-MOM menghitung nilai rata-rata dari seluruh titik yang memiliki derajat keanggotaan maksimum.
+#### b. Fungsi Keanggotaan Monoton Turun
 
 Rumus:
 
 \[
-z^*_{\text{MOM}}=
-\frac{\sum_{z\in M}z}{|M|}
+z_i=b-\alpha_i(b-a)
 \]
 
-Dengan:
+Keterangan:
+
+- \(z_i\) = nilai output tegas aturan ke-i.
+- \(\alpha_i\) = firing strength aturan ke-i.
+- \(a\) = batas bawah rentang output.
+- \(b\) = batas atas rentang output.
+
+Setelah nilai tegas dari setiap aturan diperoleh, hasil akhir dihitung menggunakan rata-rata terbobot.
 
 \[
-M=\{z\mid\mu(z)=\mu_{\max}\}
+z^*=
+\frac{\sum_{i=1}^{N}\alpha_i z_i}
+{\sum_{i=1}^{N}\alpha_i}
 \]
 
-Metode ini hanya memperhatikan titik-titik yang memiliki nilai keanggotaan tertinggi.
+Dengan demikian, setiap aturan menghasilkan nilai output tegas berdasarkan fungsi keanggotaan monoton, kemudian seluruh hasil digabungkan menggunakan rata-rata terbobot.
 
-#### d. Smallest of Maximum (SOM)
+## E. Contoh Perhitungan Manual
 
-SOM mengambil nilai terkecil atau paling kiri dari seluruh titik yang memiliki derajat keanggotaan maksimum.
+### Studi Kasus: Penentuan Harga Rumah
 
-Rumus:
+Pada contoh ini digunakan tiga variabel input dan satu variabel output.
+
+| Komponen | Nilai |
+|---|---:|
+| Lokasi Rumah (\(x\)) | 15 |
+| Luas Tanah (\(y\)) | 120 m² |
+| Luas Bangunan (\(w\)) | 80 m² |
+| Output Harga Rumah | Skala 1–23 |
+
+### 1. Fuzzifikasi
+
+Berdasarkan parameter fungsi keanggotaan yang digunakan, diperoleh hasil fuzzifikasi sebagai berikut:
+
+**Lokasi Rumah:**
+- Sangat Strategis = 0,5
+- Strategis = 0,333
+
+**Luas Tanah:**
+- Sedang = 1
+
+**Luas Bangunan:**
+- Sedang = 1
+
+### 2. Menentukan Aturan yang Aktif
+
+Berdasarkan tabel aturan harga rumah, terdapat dua aturan yang aktif.
+
+**R05:**
+
+IF Lokasi Sangat Strategis AND Luas Tanah Sedang AND Luas Bangunan Sedang THEN Harga Rumah Mahal.
+
+Nilai firing strength:
 
 \[
-z^*_{\text{SOM}}=
-\min\{z\mid\mu(z)=\mu_{\max}\}
+\alpha_1=\min(0,5;1;1)
 \]
-
-Metode ini memilih batas bawah dari daerah dengan keanggotaan tertinggi.
-
-#### e. Largest of Maximum (LOM)
-
-LOM mengambil nilai terbesar atau paling kanan dari seluruh titik yang memiliki derajat keanggotaan maksimum.
-
-Rumus:
 
 \[
-z^*_{\text{LOM}}=
-\max\{z\mid\mu(z)=\mu_{\max}\}
+\alpha_1=0,5
 \]
 
-Metode ini memilih batas atas dari daerah dengan keanggotaan tertinggi.
+**R14:**
 
-### 3. Perbedaan Lima Metode Defuzzifikasi
+IF Lokasi Strategis AND Luas Tanah Sedang AND Luas Bangunan Sedang THEN Harga Rumah Normal.
 
-| Metode | Prinsip Perhitungan |
-|---|---|
-| Centroid | Menghitung titik pusat seluruh luas kurva agregasi. |
-| Bisector | Mencari titik yang membagi luas kurva menjadi dua bagian sama besar. |
-| MOM | Menghitung rata-rata seluruh titik dengan keanggotaan maksimum. |
-| SOM | Mengambil titik terkecil dengan keanggotaan maksimum. |
-| LOM | Mengambil titik terbesar dengan keanggotaan maksimum. |
+Nilai firing strength:
 
-## E. Implementasi dalam Python
+\[
+\alpha_2=\min(0,333;1;1)
+\]
 
-Pada praktikum ini, metode Mamdani diterapkan pada sistem penentuan harga rumah. Program menggunakan Scikit-Fuzzy untuk membuat fungsi keanggotaan dan menghitung lima metode defuzzifikasi.
+\[
+\alpha_2=0,333
+\]
 
-### 1. Import Library
+Jadi, nilai firing strength yang digunakan adalah:
+
+- R05 = 0,5
+- R14 = 0,333
+
+### 3. Perhitungan Sugeno Orde 0
+
+Pada Sugeno Orde 0, setiap aturan menghasilkan nilai konstanta. Dalam contoh ini digunakan nilai puncak fungsi keanggotaan harga rumah sebagai nilai konstanta.
+
+- R05: Harga Mahal = 15
+- R14: Harga Normal = 11
+
+Diketahui:
+
+\[
+z_1=15
+\]
+
+\[
+z_2=11
+\]
+
+Menggunakan rumus rata-rata terbobot:
+
+\[
+z^*=
+\frac{\sum\alpha_i z_i}{\sum\alpha_i}
+\]
+
+Substitusi nilai:
+
+\[
+z^*=
+\frac{(0,5\times15)+(0,333\times11)}
+{0,5+0,333}
+\]
+
+\[
+z^*=\frac{7,5+3,663}{0,833}
+\]
+
+\[
+z^*=\frac{11,163}{0,833}
+\]
+
+\[
+\boxed{z^*\approx13,401}
+\]
+
+Jadi, hasil perhitungan Sugeno Orde 0 adalah sekitar **13,401** pada skala harga rumah.
+
+### 4. Perhitungan Tsukamoto
+
+Pada metode Tsukamoto, konsekuen harus menggunakan fungsi keanggotaan monoton.
+
+Dalam contoh ini digunakan fungsi monoton naik dengan rentang output harga rumah 1–23.
+
+Rumus fungsi monoton naik:
+
+\[
+z_i=a+\alpha_i(b-a)
+\]
+
+Dengan \(a=1\) dan \(b=23\), diperoleh:
+
+\[
+z_i=1+\alpha_i(23-1)
+\]
+
+\[
+z_i=1+22\alpha_i
+\]
+
+Perhitungan setiap aturan:
+
+**R05:**
+
+\[
+z_1=1+22(0,5)
+\]
+
+\[
+z_1=12
+\]
+
+**R14:**
+
+\[
+z_2=1+22(0,333)
+\]
+
+\[
+z_2=8,326
+\]
+
+Selanjutnya, menghitung hasil akhir menggunakan rata-rata terbobot:
+
+\[
+z^*=
+\frac{(0,5\times12)+(0,333\times8,326)}
+{0,5+0,333}
+\]
+
+\[
+z^*=\frac{6+2,7716}{0,833}
+\]
+
+\[
+z^*=\frac{8,7716}{0,833}
+\]
+
+\[
+\boxed{z^*\approx10,530}
+\]
+
+Jadi, hasil perhitungan Tsukamoto adalah sekitar **10,530** pada skala harga rumah.
+
+## F. Implementasi dalam Python
+
+Pada bagian ini dilakukan implementasi metode Sugeno Orde 0, Sugeno Orde 1, dan Tsukamoto menggunakan bahasa pemrograman Python.
+
+### 1. Program Python
 
 ```python
 import numpy as np
-import matplotlib.pyplot as plt
-import skfuzzy as fuzz
-```
 
-Library NumPy digunakan untuk perhitungan numerik, Matplotlib untuk membuat grafik, dan Scikit-Fuzzy untuk membantu proses perhitungan fungsi keanggotaan serta defuzzifikasi.
+# ==========================================================
+# 1. IMPLEMENTASI SISTEM SUGENO (ORDE 0 DAN ORDE 1)
+# ==========================================================
 
-### 2. Menentukan Semesta Output dan Fungsi Keanggotaan
+def hitung_sugeno(alphas, z_values):
+    """
+    alphas: list firing strength [alpha_1, alpha_2, ...]
+    z_values: list output tegas aturan [z_1, z_2, ...]
+    """
+    alphas = np.array(alphas)
+    z_values = np.array(z_values)
 
-```python
-# Semesta output: Harga Rumah (skala 1-23)
-z = np.arange(1, 23.01, 0.01)
+    total_alpha = np.sum(alphas)
 
-# Fungsi keanggotaan output Harga Rumah
-mf_sangat_murah = fuzz.trapmf(z, [1, 1, 3, 7])
-mf_murah = fuzz.trimf(z, [3, 7, 11])
-mf_normal = fuzz.trimf(z, [7, 11, 15])
-mf_mahal = fuzz.trimf(z, [11, 15, 19])
-mf_sangat_mahal = fuzz.trapmf(z, [15, 19, 23, 23])
+    if total_alpha == 0:
+        return 0.0
 
-# Mengelompokkan fungsi keanggotaan
-mf_harga = {
-    "Sangat Murah": mf_sangat_murah,
-    "Murah": mf_murah,
-    "Normal": mf_normal,
-    "Mahal": mf_mahal,
-    "Sangat Mahal": mf_sangat_mahal
-}
-```
+    return np.sum(alphas * z_values) / total_alpha
 
-Bagian ini menentukan rentang nilai output harga rumah dari skala 1 sampai 23. Selanjutnya, dibuat lima fungsi keanggotaan, yaitu Sangat Murah, Murah, Normal, Mahal, dan Sangat Mahal.
 
-### 3. Menentukan Skenario dan Firing Strength
+# ==========================================================
+# 2. IMPLEMENTASI SISTEM TSUKAMOTO
+# ==========================================================
 
-```python
-skenario = {
-    "Skenario A": {
-        "R01": (1.0, "Murah")
-    },
+def invers_monoton_naik(alpha, a, b):
+    """z = a + alpha * (b - a)"""
+    return a + alpha * (b - a)
 
-    "Skenario B": {
-        "R04": (0.2, "Normal"),
-        "R05": (0.3, "Mahal"),
-        "R07": (0.2, "Mahal"),
-        "R08": (0.3, "Sangat Mahal"),
-        "R13": (0.2, "Murah"),
-        "R14": (0.6, "Normal"),
-        "R16": (0.2, "Normal"),
-        "R17": (0.4, "Mahal")
-    },
 
-    "Skenario C": {
-        "R27": (1.0, "Mahal")
-    }
-}
-```
+def invers_monoton_turun(alpha, a, b):
+    """z = b - alpha * (b - a)"""
+    return b - alpha * (b - a)
 
-Bagian ini menentukan nilai firing strength dan kategori output dari setiap aturan yang aktif pada tiga skenario pengujian. Setiap aturan memiliki nilai \(\alpha\) dan konsekuen yang digunakan untuk membentuk kurva agregasi.
 
-### 4. Melakukan Implikasi MIN dan Agregasi MAX
+def hitung_tsukamoto(alphas, fungsi_invers_list):
+    """
+    fungsi_invers_list: list lambda fungsi invers
+    untuk setiap aturan
+    """
+    z_values = [
+        func(alpha)
+        for alpha, func in zip(alphas, fungsi_invers_list)
+    ]
 
-```python
-kurva_agregasi = {}
+    return hitung_sugeno(alphas, z_values), z_values
 
-for nama_skenario, aturan in skenario.items():
 
-    agregasi = np.zeros_like(z)
+# ==========================================================
+# 3. PENGUJIAN DAN KOMPARASI KASUS HARGA RUMAH
+# ==========================================================
 
-    for nama_rule, (alpha, konsekuen) in aturan.items():
+# Input crisp berdasarkan contoh perhitungan manual
+lokasi = 15
+luas_tanah = 120
+luas_bangunan = 80
 
-        # Implikasi MIN
-        hasil_potong = np.fmin(
-            alpha,
-            mf_harga[konsekuen]
-        )
+# Nilai alpha berdasarkan hasil fuzzifikasi
+# R05 = Sangat Strategis AND Sedang AND Sedang
+# R14 = Strategis AND Sedang AND Sedang
 
-        # Agregasi MAX
-        agregasi = np.fmax(
-            agregasi,
-            hasil_potong
-        )
+alphas_kasus = [0.5, 0.333]
 
-    if np.max(agregasi) == 0:
-        raise ValueError(
-            f"Agregasi {nama_skenario} kosong!"
-        )
 
-    kurva_agregasi[nama_skenario] = agregasi
-```
+# A. SUGENO ORDE 0
+# R05: Harga Mahal = 15
+# R14: Harga Normal = 11
 
-Pada tahap ini, setiap fungsi keanggotaan output dipotong menggunakan nilai firing strength dengan operator MIN. Selanjutnya, hasil pemotongan dari seluruh aturan digabungkan menggunakan operator MAX.
+z_sugeno0 = [15.0, 11.0]
 
-Hasilnya adalah kurva agregasi yang digunakan sebagai dasar untuk menghitung nilai crisp.
+hasil_sugeno0 = hitung_sugeno(
+    alphas_kasus,
+    z_sugeno0
+)
 
-### 5. Menghitung Lima Metode Defuzzifikasi
 
-```python
-defuzz_methods = [
-    'centroid',
-    'bisector',
-    'mom',
-    'som',
-    'lom'
+# B. SUGENO ORDE 1
+# Konsekuen berupa persamaan linear.
+# Koefisien berikut merupakan contoh rancangan.
+
+# R05
+z1 = (
+    0.05 * lokasi +
+    0.03 * luas_tanah +
+    0.04 * luas_bangunan +
+    5
+)
+
+# R14
+z2 = (
+    0.04 * lokasi +
+    0.02 * luas_tanah +
+    0.03 * luas_bangunan +
+    4
+)
+
+z_sugeno1 = [z1, z2]
+
+hasil_sugeno1 = hitung_sugeno(
+    alphas_kasus,
+    z_sugeno1
+)
+
+
+# C. TSUKAMOTO
+# Menggunakan fungsi monoton naik dengan rentang 1-23
+
+fungsi_tsukamoto = [
+    lambda a: invers_monoton_naik(a, 1.0, 23.0),
+    lambda a: invers_monoton_naik(a, 1.0, 23.0)
 ]
 
-hasil_defuzz = {}
-
-for nama_skenario, agregasi in kurva_agregasi.items():
-
-    hasil = {}
-
-    for method in defuzz_methods:
-        val = fuzz.defuzz(z, agregasi, method)
-        hasil[method] = val
-
-    hasil_defuzz[nama_skenario] = hasil
-```
-
-Bagian ini menghitung lima metode defuzzifikasi untuk setiap skenario. Hasil perhitungan disimpan ke dalam variabel `hasil_defuzz` agar dapat ditampilkan dan dibandingkan.
-
-### 6. Menampilkan Hasil Perhitungan
-
-```python
-print("=" * 70)
-print("HASIL KOMPARASI METODE DEFUZZIFIKASI MAMDANI")
-print("SISTEM PENENTUAN HARGA RUMAH")
-print("=" * 70)
-
-for nama_skenario, hasil in hasil_defuzz.items():
-
-    print("\n", nama_skenario)
-
-    for metode, nilai in hasil.items():
-        print(f"Metode {metode.upper():<10}: {nilai:.3f}")
-
-print("\nTABEL PERBANDINGAN HASIL")
-
-print(
-    f"{'Skenario':<15}"
-    f"{'Centroid':<12}"
-    f"{'Bisector':<12}"
-    f"{'MOM':<12}"
-    f"{'SOM':<12}"
-    f"{'LOM':<12}"
+hasil_tsukamoto, z_tsuka_values = hitung_tsukamoto(
+    alphas_kasus,
+    fungsi_tsukamoto
 )
 
-for nama_skenario, hasil in hasil_defuzz.items():
 
-    print(
-        f"{nama_skenario:<15}"
-        f"{hasil['centroid']:<12.3f}"
-        f"{hasil['bisector']:<12.3f}"
-        f"{hasil['mom']:<12.3f}"
-        f"{hasil['som']:<12.3f}"
-        f"{hasil['lom']:<12.3f}"
-    )
+# ==========================================================
+# 4. CETAK HASIL
+# ==========================================================
+
+print("=" * 65)
+print("HASIL KOMPARASI METODE SUGENO DAN TSUKAMOTO")
+print("SISTEM PENENTUAN HARGA RUMAH")
+print("=" * 65)
+
+print("\nINPUT CRISP")
+print(f"Lokasi          : {lokasi}")
+print(f"Luas Tanah      : {luas_tanah} m2")
+print(f"Luas Bangunan   : {luas_bangunan} m2")
+
+print("\nFIRING STRENGTH")
+print(f"Alpha R05       : {alphas_kasus[0]:.3f}")
+print(f"Alpha R14       : {alphas_kasus[1]:.3f}")
+
+print("\nA. SUGENO ORDE 0")
+print(f"z1 (R05)        : {z_sugeno0[0]:.3f}")
+print(f"z2 (R14)        : {z_sugeno0[1]:.3f}")
+print(f"Hasil           : {hasil_sugeno0:.3f}")
+
+print("\nB. SUGENO ORDE 1")
+print(f"z1 (R05)        : {z_sugeno1[0]:.3f}")
+print(f"z2 (R14)        : {z_sugeno1[1]:.3f}")
+print(f"Hasil           : {hasil_sugeno1:.3f}")
+
+print("\nC. TSUKAMOTO")
+print(f"z1 (R05)        : {z_tsuka_values[0]:.3f}")
+print(f"z2 (R14)        : {z_tsuka_values[1]:.3f}")
+print(f"Hasil           : {hasil_tsukamoto:.3f}")
+
+print("=" * 65)
+print("Output menggunakan skala harga rumah 1-23.")
+print("=" * 65)
 ```
 
-Kode tersebut menampilkan hasil dari setiap metode defuzzifikasi, kemudian menyusun hasilnya ke dalam tabel perbandingan agar lebih mudah dianalisis.
+### 2. Output Program
 
-### 7. Visualisasi Hasil Defuzzifikasi
+Program menampilkan hasil perhitungan dari tiga metode, yaitu Sugeno Orde 0, Sugeno Orde 1, dan Tsukamoto.
 
-```python
-colors = {
-    'centroid': 'red',
-    'bisector': 'purple',
-    'mom': 'black',
-    'som': 'green',
-    'lom': 'orange'
-}
+Hasil yang ditampilkan meliputi:
 
-for nama_skenario, agregasi in kurva_agregasi.items():
+- Nilai input lokasi, luas tanah, dan luas bangunan.
+- Nilai firing strength dari aturan R05 dan R14.
+- Nilai output setiap aturan pada Sugeno Orde 0.
+- Nilai output setiap aturan pada Sugeno Orde 1.
+- Nilai output setiap aturan pada Tsukamoto.
+- Hasil akhir perhitungan dari ketiga metode.
 
-    plt.figure(figsize=(12, 6.5))
+*Catatan: Nilai output lengkap dapat dilihat pada hasil eksekusi program di Visual Studio Code.*
 
-    plt.plot(
-        z,
-        agregasi,
-        color='blue',
-        linewidth=2.5,
-        label='Kurva Agregasi Fuzzy'
-    )
+## G. Matriks Perbandingan Mamdani, Sugeno, dan Tsukamoto
 
-    plt.fill_between(
-        z,
-        0,
-        agregasi,
-        color='skyblue',
-        alpha=0.4
-    )
+Berikut perbandingan karakteristik ketiga metode inferensi fuzzy berdasarkan beberapa kriteria.
 
-    for method, val in hasil_defuzz[nama_skenario].items():
+| Kriteria | Metode Mamdani | Metode Sugeno (TSK) | Metode Tsukamoto |
+|---|---|---|---|
+| Bentuk Konsekuen | Himpunan fuzzy berupa kategori harga rumah (Sangat Murah, Murah, Normal, Mahal, Sangat Mahal). | Konstanta (Orde 0) atau fungsi linear (Orde 1) sebagai nilai keluaran harga rumah. | Himpunan fuzzy dengan fungsi keanggotaan monoton. |
+| Kecepatan Komputasi | Relatif lebih lambat karena memerlukan proses agregasi dan defuzzifikasi. | Cepat karena menggunakan perhitungan rata-rata terbobot. | Relatif cepat karena menggunakan fungsi invers dan rata-rata terbobot. |
+| Representasi Penalaran | Alami dan mudah dipahami karena menggunakan kategori harga rumah. | Kurang intuitif untuk bahasa manusia karena konsekuennya berupa nilai atau persamaan matematika. | Cukup mudah dipahami, tetapi konsekuennya harus memiliki fungsi keanggotaan monoton. |
+| Cocok untuk | Sistem pendukung keputusan yang menentukan kategori harga rumah berdasarkan kondisi rumah. | Sistem prediksi harga rumah yang membutuhkan hasil berupa nilai numerik. | Sistem penentuan harga rumah yang memiliki hubungan keputusan monoton. |
+| Optimasi Matematika | Relatif lebih sulit diintegrasikan dengan metode pembelajaran mesin karena proses defuzzifikasi. | Mudah dikombinasikan dengan Neural Network, misalnya ANFIS. | Membutuhkan fungsi keanggotaan monoton dan perhitungan invers. |
 
-        plt.axvline(
-            x=val,
-            color=colors[method],
-            linestyle='--',
-            linewidth=2,
-            label=f'{method.upper()} ({val:.2f})'
-        )
+Berdasarkan tabel tersebut, setiap metode memiliki kelebihan dan karakteristik masing-masing. Mamdani lebih mudah dipahami karena menggunakan kategori fuzzy, Sugeno lebih sederhana dalam menghasilkan nilai numerik, sedangkan Tsukamoto menggunakan fungsi keanggotaan monoton untuk memperoleh output setiap aturan.
 
-        idx = np.abs(z - val).argmin()
+## H. Tugas Praktikum 9
 
-        plt.scatter(
-            [val],
-            [agregasi[idx]],
-            color=colors[method],
-            s=60,
-            zorder=6
-        )
+### 1. Implementasi Sistem Sugeno dan Tsukamoto
 
-    plt.title(
-        'Perbandingan 5 Metode Defuzzifikasi - ' + nama_skenario,
-        fontsize=13,
-        fontweight='bold'
-    )
+Pada tugas ini dibuat program untuk membandingkan hasil metode Sugeno Orde 0 dan Tsukamoto dalam sistem penentuan harga rumah.
 
-    plt.xlabel('Skala Harga Rumah', fontsize=11)
-    plt.ylabel('Derajat Keanggotaan μ(z)', fontsize=11)
+Program menggunakan tiga variabel input, yaitu lokasi, luas tanah, dan luas bangunan. Pengujian dilakukan dengan lima variasi input untuk mengetahui perbedaan hasil dari kedua metode.
 
-    plt.ylim(-0.05, 1.05)
-    plt.grid(True, linestyle=':', alpha=0.6)
-    plt.legend(loc='upper right', fontsize=9)
-    plt.tight_layout()
-
-    nama_file = nama_skenario.replace(" ", "_").lower()
-
-    plt.savefig(
-        f'komparasi_{nama_file}.png',
-        dpi=300
-    )
-
-    plt.show()
-```
-
-Bagian ini menampilkan kurva agregasi fuzzy untuk setiap skenario. Garis vertikal dengan warna berbeda menunjukkan posisi hasil dari metode Centroid, Bisector, MOM, SOM, dan LOM.
-
-Dengan visualisasi tersebut, perbedaan posisi nilai akhir dari setiap metode dapat dilihat secara langsung.
-
-## F. Analisis Hasil Komparasi Metode
-
-Berdasarkan hasil pengujian pada Skenario B dalam sistem penentuan harga rumah, diperoleh perbandingan lima metode defuzzifikasi sebagai berikut.
-
-| Metode | Nilai Output | Karakteristik Utama | Rekomendasi pada Kasus Harga Rumah |
-|---|---:|---|---|
-| Centroid (COG) | ≈12,014 | Mempertimbangkan seluruh luas kurva agregasi. | Estimasi harga berdasarkan seluruh aturan yang aktif. |
-| Bisector | ≈11,830 | Membagi luas kurva agregasi menjadi dua bagian sama besar. | Estimasi dengan mempertimbangkan keseimbangan luas kurva. |
-| MOM | ≈11,000 | Mengambil rata-rata titik dengan derajat keanggotaan maksimum. | Estimasi berdasarkan nilai dengan keanggotaan tertinggi. |
-| SOM | ≈9,400 | Memilih batas bawah dari daerah dengan keanggotaan maksimum. | Estimasi dengan mengambil nilai yang lebih rendah. |
-| LOM | ≈12,600 | Memilih batas atas dari daerah dengan keanggotaan maksimum. | Estimasi dengan mengambil nilai yang lebih tinggi. |
-
-Berdasarkan tabel tersebut, Centroid menghasilkan nilai sekitar 12,014, sedangkan Bisector menghasilkan nilai sekitar 11,830. Kedua metode memiliki hasil yang berdekatan karena sama-sama mempertimbangkan luas daerah hasil agregasi.
-
-MOM menghasilkan nilai sekitar 11,000 karena mengambil rata-rata titik yang memiliki derajat keanggotaan maksimum. Sementara itu, SOM menghasilkan nilai paling rendah, yaitu sekitar 9,400, dan LOM menghasilkan nilai paling tinggi, yaitu sekitar 12,600.
-
-Perbedaan hasil tersebut menunjukkan bahwa pemilihan metode defuzzifikasi dapat memengaruhi nilai akhir yang dihasilkan oleh sistem meskipun menggunakan kurva agregasi yang sama.
-
-## G. Tugas Praktikum 7
-
-### Studi Kasus: Sistem Penentuan Harga Rumah
-
-Pada tugas ini, metode Mamdani diterapkan untuk menentukan nilai harga rumah berdasarkan tiga konsekuen fuzzy, yaitu Murah, Normal, dan Mahal. Setiap konsekuen memiliki nilai firing strength yang berbeda.
-
-### 1. Import Library dan Menentukan Domain
+### 2. Program Python
 
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
-import skfuzzy as fuzz
-import pandas as pd
 
-# Menentukan domain harga rumah
-z = np.arange(1, 23.01, 0.01)
-```
+# ==========================================================
+# 1. FUNGSI KEANGGOTAAN
+# ==========================================================
 
-Library yang digunakan adalah NumPy, Matplotlib, Scikit-Fuzzy, dan Pandas. Domain harga rumah ditentukan pada rentang 1 sampai 23 dengan interval 0,01.
+def trapmf(x, a, b, c, d):
+    if x < a or x > d:
+        return 0.0
+    elif b <= x <= c:
+        return 1.0
+    elif a <= x < b:
+        return (x - a) / (b - a) if b != a else 1.0
+    else:
+        return (d - x) / (d - c) if d != c else 1.0
 
-### 2. Membuat Fungsi Keanggotaan Harga Rumah
 
-```python
-sangat_murah = fuzz.trapmf(z, [1, 1, 3, 7])
-murah = fuzz.trimf(z, [3, 7, 11])
-normal = fuzz.trimf(z, [7, 11, 15])
-mahal = fuzz.trimf(z, [11, 15, 19])
-sangat_mahal = fuzz.trapmf(z, [15, 19, 23, 23])
-```
+def trimf(x, a, b, c):
+    if x < a or x > c:
+        return 0.0
+    elif x == b:
+        return 1.0
+    elif x < b:
+        return (x - a) / (b - a)
+    else:
+        return (c - x) / (c - b)
 
-Bagian ini membentuk lima kategori fungsi keanggotaan harga rumah menggunakan fungsi segitiga dan trapesium.
 
-### 3. Menentukan Nilai Firing Strength
+# ==========================================================
+# 2. IMPLEMENTASI SUGENO ORDE 0
+# ==========================================================
 
-```python
-alpha_murah = 0.5
-alpha_normal = 0.8
-alpha_mahal = 0.2
-```
+def hitung_sugeno(alphas, z_values):
+    total_alpha = np.sum(alphas)
 
-Nilai firing strength ditentukan untuk tiga kategori output, yaitu Murah sebesar 0,5, Normal sebesar 0,8, dan Mahal sebesar 0,2.
+    if total_alpha == 0:
+        return None
 
-### 4. Melakukan Pemotongan Fungsi Keanggotaan
-
-```python
-potong_murah = np.fmin(alpha_murah, murah)
-potong_normal = np.fmin(alpha_normal, normal)
-potong_mahal = np.fmin(alpha_mahal, mahal)
-```
-
-Setiap fungsi keanggotaan output dipotong menggunakan operator MIN berdasarkan nilai firing strength masing-masing.
-
-### 5. Melakukan Agregasi MAX
-
-```python
-agregasi = np.fmax(
-    potong_murah,
-    np.fmax(potong_normal, potong_mahal)
-)
-```
-
-Hasil pemotongan dari ketiga kategori kemudian digabungkan menggunakan operator MAX sehingga menghasilkan satu kurva agregasi fuzzy.
-
-### 6. Menghitung Lima Metode Defuzzifikasi
-
-```python
-hasil = {
-    "Centroid": fuzz.defuzz(z, agregasi, 'centroid'),
-    "Bisector": fuzz.defuzz(z, agregasi, 'bisector'),
-    "MOM": fuzz.defuzz(z, agregasi, 'mom'),
-    "SOM": fuzz.defuzz(z, agregasi, 'som'),
-    "LOM": fuzz.defuzz(z, agregasi, 'lom')
-}
-```
-
-Pada bagian ini dilakukan perhitungan menggunakan lima metode defuzzifikasi. Hasil setiap metode disimpan dalam dictionary `hasil`.
-
-### 7. Menampilkan Hasil Perhitungan
-
-```python
-print("HASIL DEFUZZIFIKASI HARGA RUMAH")
-
-for metode, nilai in hasil.items():
-    print(f"{metode}: {nilai:.2f}")
-
-print("\nTABEL PERBANDINGAN")
-print("+------------------------+--------------+")
-print("| Metode Defuzzifikasi   | Nilai Output |")
-print("+------------------------+--------------+")
-
-for metode, nilai in hasil.items():
-    print(f"| {metode:<22} | {nilai:>12.6f} |")
-
-print("+------------------------+--------------+")
-```
-
-Kode tersebut menampilkan hasil dari kelima metode defuzzifikasi dalam bentuk teks dan tabel agar perbedaannya lebih mudah dilihat.
-
-### 8. Membuat Grafik Visualisasi
-
-```python
-plt.figure(figsize=(12, 6))
-
-plt.plot(z, murah, label="Murah", linestyle="--")
-plt.plot(z, normal, label="Normal", linestyle="--")
-plt.plot(z, mahal, label="Mahal", linestyle="--")
-
-plt.fill_between(
-    z,
-    0,
-    agregasi,
-    alpha=0.3,
-    label="Hasil Agregasi"
-)
-
-warna = ['red', 'purple', 'black', 'green', 'orange']
-
-for (metode, nilai), warna_garis in zip(hasil.items(), warna):
-    plt.axvline(
-        nilai,
-        color=warna_garis,
-        linestyle=":",
-        label=f"{metode} = {nilai:.2f}"
+    return (
+        np.sum(np.array(alphas) * np.array(z_values))
+        / total_alpha
     )
 
-plt.title("Perbandingan Metode Defuzzifikasi Harga Rumah")
-plt.xlabel("Nilai Harga Rumah")
-plt.ylabel("Derajat Keanggotaan")
+
+# ==========================================================
+# 3. IMPLEMENTASI TSUKAMOTO
+# ==========================================================
+
+def invers_monoton_naik(alpha, a, b):
+    return a + alpha * (b - a)
+
+
+def invers_monoton_turun(alpha, a, b):
+    return b - alpha * (b - a)
+
+
+def hitung_tsukamoto(alphas, z_values):
+    total_alpha = np.sum(alphas)
+
+    if total_alpha == 0:
+        return None
+
+    return (
+        np.sum(np.array(alphas) * np.array(z_values))
+        / total_alpha
+    )
+
+
+# ==========================================================
+# 4. FUNGSI MENGHITUNG ALPHA 4 ATURAN
+# ==========================================================
+
+def hitung_alpha(lokasi, tanah, bangunan):
+
+    # R01: Sangat Strategis, Kecil, Sempit
+    alpha_R01 = min(
+        trapmf(lokasi, 0, 0, 10, 20),
+        trapmf(tanah, 36, 36, 60, 100),
+        trapmf(bangunan, 21, 21, 36, 60)
+    )
+
+    # R05: Sangat Strategis, Sedang, Sedang
+    alpha_R05 = min(
+        trapmf(lokasi, 0, 0, 10, 20),
+        trimf(tanah, 72, 120, 168),
+        trimf(bangunan, 45, 80, 115)
+    )
+
+    # R14: Strategis, Sedang, Sedang
+    alpha_R14 = min(
+        trimf(lokasi, 10, 25, 40),
+        trimf(tanah, 72, 120, 168),
+        trimf(bangunan, 45, 80, 115)
+    )
+
+    # R27: Tidak Strategis, Luas, Luas
+    alpha_R27 = min(
+        trapmf(lokasi, 30, 40, 50, 50),
+        trapmf(tanah, 140, 170, 200, 200),
+        trapmf(bangunan, 90, 115, 150, 150)
+    )
+
+    return [
+        alpha_R01,
+        alpha_R05,
+        alpha_R14,
+        alpha_R27
+    ]
+
+
+# ==========================================================
+# 5. KONSEKUEN SUGENO ORDE 0
+# ==========================================================
+
+# Nilai output:
+# R01 = Murah (7)
+# R05 = Mahal (15)
+# R14 = Normal (11)
+# R27 = Mahal (15)
+
+z_sugeno = [7, 15, 11, 15]
+
+
+# ==========================================================
+# 6. KONSEKUEN TSUKAMOTO
+# ==========================================================
+
+def hitung_z_tsukamoto(alphas):
+
+    alpha_R01, alpha_R05, alpha_R14, alpha_R27 = alphas
+
+    # R01 = Murah, monoton turun [3, 11]
+    z_R01 = invers_monoton_turun(alpha_R01, 3, 11)
+
+    # R05 = Mahal, monoton naik [11, 19]
+    z_R05 = invers_monoton_naik(alpha_R05, 11, 19)
+
+    # R14 = Normal, monoton naik [7, 11]
+    z_R14 = invers_monoton_naik(alpha_R14, 7, 11)
+
+    # R27 = Mahal, monoton naik [11, 19]
+    z_R27 = invers_monoton_naik(alpha_R27, 11, 19)
+
+    return [z_R01, z_R05, z_R14, z_R27]
+
+
+# ==========================================================
+# 7. PENGUJIAN 5 VARIASI INPUT
+# ==========================================================
+
+data_pengujian = [
+    (5, 50, 30),
+    (15, 120, 80),
+    (25, 150, 100),
+    (35, 180, 130),
+    (45, 190, 140)
+]
+
+hasil_pengujian = []
+
+for nomor, (lokasi, tanah, bangunan) in enumerate(
+    data_pengujian, start=1
+):
+
+    alphas = hitung_alpha(lokasi, tanah, bangunan)
+
+    # Sugeno Orde 0
+    hasil_sugeno = hitung_sugeno(alphas, z_sugeno)
+
+    # Tsukamoto
+    z_tsukamoto = hitung_z_tsukamoto(alphas)
+
+    hasil_tsukamoto = hitung_tsukamoto(
+        alphas, z_tsukamoto
+    )
+
+    if hasil_sugeno is not None and hasil_tsukamoto is not None:
+        selisih = abs(hasil_sugeno - hasil_tsukamoto)
+        harga_sugeno = hasil_sugeno * 100_000_000
+        harga_tsukamoto = hasil_tsukamoto * 100_000_000
+    else:
+        selisih = None
+        harga_sugeno = None
+        harga_tsukamoto = None
+
+    hasil_pengujian.append({
+        "No": nomor,
+        "Lokasi": lokasi,
+        "Tanah": tanah,
+        "Bangunan": bangunan,
+        "Alpha": alphas,
+        "Sugeno": hasil_sugeno,
+        "Tsukamoto": hasil_tsukamoto,
+        "Selisih": selisih,
+        "Harga Sugeno": harga_sugeno,
+        "Harga Tsukamoto": harga_tsukamoto
+    })
+
+
+# ==========================================================
+# 8. TABEL PERBANDINGAN HASIL
+# ==========================================================
+
+print("\n" + "=" * 105)
+print("TABEL PERBANDINGAN SUGENO DAN TSUKAMOTO")
+print("SISTEM PENENTUAN HARGA RUMAH")
+print("=" * 105)
+
+print(
+    f"{'No':<5}"
+    f"{'Lokasi':<10}"
+    f"{'Tanah':<10}"
+    f"{'Bangunan':<12}"
+    f"{'Sugeno':<13}"
+    f"{'Tsukamoto':<13}"
+    f"{'Selisih':<12}"
+)
+
+print("-" * 105)
+
+for data in hasil_pengujian:
+
+    if data["Sugeno"] is not None:
+        print(
+            f"{data['No']:<5}"
+            f"{data['Lokasi']:<10}"
+            f"{data['Tanah']:<10}"
+            f"{data['Bangunan']:<12}"
+            f"{data['Sugeno']:<13.3f}"
+            f"{data['Tsukamoto']:<13.3f}"
+            f"{data['Selisih']:<12.3f}"
+        )
+
+    else:
+        print(
+            f"{data['No']:<5}"
+            f"{data['Lokasi']:<10}"
+            f"{data['Tanah']:<10}"
+            f"{data['Bangunan']:<12}"
+            "Tidak ada aturan aktif"
+        )
+
+print("=" * 105)
+print("Keterangan: 1 skala output = Rp100.000.000")
+
+
+# ==========================================================
+# 9. GRAFIK PERBANDINGAN SUGENO DAN TSUKAMOTO
+# ==========================================================
+
+label = [
+    f"S{i}" for i in range(1, len(hasil_pengujian) + 1)
+]
+
+nilai_sugeno = [
+    data["Sugeno"] if data["Sugeno"] is not None else 0
+    for data in hasil_pengujian
+]
+
+nilai_tsukamoto = [
+    data["Tsukamoto"] if data["Tsukamoto"] is not None else 0
+    for data in hasil_pengujian
+]
+
+x = np.arange(len(label))
+lebar = 0.35
+
+plt.figure(figsize=(10, 6))
+
+plt.bar(
+    x - lebar / 2,
+    nilai_sugeno,
+    lebar,
+    label="Sugeno Orde 0"
+)
+
+plt.bar(
+    x + lebar / 2,
+    nilai_tsukamoto,
+    lebar,
+    label="Tsukamoto"
+)
+
+plt.xlabel("Skenario Pengujian")
+plt.ylabel("Nilai Output Harga Rumah (Skala 1–23)")
+plt.title("Perbandingan Hasil Metode Sugeno dan Tsukamoto")
+
+plt.xticks(x, label)
+plt.ylim(0, 23)
+plt.grid(axis="y", linestyle="--", alpha=0.5)
 plt.legend()
-plt.grid()
+
+plt.tight_layout()
 
 plt.savefig(
-    "defuzzifikasi_tugas_8_harga_rumah.png",
-    dpi=300,
-    bbox_inches="tight"
+    "grafik_perbandingan_harga_rumah.png",
+    dpi=200
 )
 
 plt.show()
 ```
 
-Grafik tersebut menampilkan fungsi keanggotaan Murah, Normal, dan Mahal beserta daerah agregasi. Garis vertikal menunjukkan hasil dari setiap metode defuzzifikasi sehingga perbedaan nilai output dapat dibandingkan secara visual.
+### 3. Output Program
 
-### 9. Analisis Tugas Praktikum
+Program melakukan pengujian menggunakan lima variasi input lokasi, luas tanah, dan luas bangunan. Hasil perhitungan ditampilkan dalam bentuk tabel perbandingan yang berisi:
 
-Berdasarkan hasil pengujian, metode yang paling sesuai untuk sistem penentuan harga rumah adalah Centroid. Metode ini menghitung titik keseimbangan dari seluruh daerah hasil agregasi fuzzy.
+- Nomor pengujian.
+- Nilai lokasi.
+- Luas tanah.
+- Luas bangunan.
+- Hasil metode Sugeno.
+- Hasil metode Tsukamoto.
+- Selisih hasil kedua metode.
 
-Dengan demikian, seluruh kategori harga yang aktif, seperti Murah, Normal, dan Mahal, ikut diperhitungkan dalam menentukan nilai akhir. Metode Centroid juga memberikan hasil yang mempertimbangkan bentuk keseluruhan kurva, bukan hanya titik dengan derajat keanggotaan tertinggi.
+Selain tabel, program menghasilkan grafik batang untuk membandingkan hasil Sugeno Orde 0 dan Tsukamoto pada setiap skenario pengujian.
 
-Namun, pemilihan metode tetap perlu disesuaikan dengan kebutuhan sistem. Jika sistem membutuhkan proses yang lebih sederhana, metode lain seperti MOM dapat menjadi alternatif.
+**Nama file grafik yang dihasilkan:**
 
-## H. Pertanyaan Analisis
+`grafik_perbandingan_harga_rumah.png`
 
-### 1. Mengapa metode Centroid memiliki komputasi yang lebih berat dibandingkan MOM pada mikrokontroler atau sistem berdaya rendah (*embedded systems*)?
+*Catatan: Screenshot output tabel dan grafik dimasukkan setelah program dijalankan.*
 
-**Jawaban:**
+## I. Pertanyaan Analisis
 
-Metode Centroid membutuhkan perhitungan luas dan titik keseimbangan dari seluruh kurva hasil agregasi. Perhitungannya melibatkan banyak operasi matematika, seperti perkalian, penjumlahan, dan pembagian pada setiap titik data.
-
-Sementara itu, metode MOM hanya mencari titik-titik yang memiliki derajat keanggotaan paling tinggi, kemudian menghitung nilai rata-ratanya. Karena prosesnya lebih sederhana, MOM membutuhkan komputasi yang lebih ringan dibandingkan Centroid.
-
-### 2. Dalam skenario darurat (*emergency braking system* pada mobil otonom), metode manakah antara SOM dan LOM yang lebih tepat digunakan untuk menentukan besarnya gaya rem? Jelaskan implikasi keselamatannya!
-
-**Jawaban:**
-
-Pemilihan metode SOM atau LOM harus disesuaikan dengan arti nilai output yang digunakan oleh sistem. Jika nilai output yang lebih kecil mewakili gaya pengereman yang lebih kuat, maka SOM dapat dipilih karena mengambil nilai terkecil dari daerah dengan derajat keanggotaan maksimum.
-
-Namun, sistem pengereman tidak boleh hanya mengandalkan pemilihan nilai terkecil. Kondisi kendaraan, kecepatan, permukaan jalan, dan risiko roda terkunci juga harus diperhitungkan agar pengereman tetap aman dan kendaraan tidak kehilangan kendali.
-
-### 3. Jika kurva agregasi memiliki dua puncak terpisah yang simetris (*bimodal distribution*), apakah kelemahan metode MOM?
+### 1. Mengapa metode Sugeno jauh lebih disukai dibandingkan Mamdani pada sistem kontrol industri waktu-nyata (*real-time industrial control*)?
 
 **Jawaban:**
 
-Kelemahan metode MOM adalah menghasilkan nilai rata-rata dari seluruh titik yang memiliki derajat keanggotaan maksimum. Jika terdapat dua puncak yang terpisah dan simetris, hasil MOM bisa berada di tengah-tengah kedua puncak tersebut.
+Metode Sugeno lebih disukai karena proses perhitungannya lebih sederhana dan cepat dibandingkan Mamdani. Sugeno menggunakan nilai output berupa konstanta atau persamaan matematika sehingga tidak memerlukan proses agregasi dan defuzzifikasi seperti pada Mamdani.
 
-Padahal, nilai tengah tersebut belum tentu memiliki derajat keanggotaan yang tinggi. Akibatnya, hasil yang diperoleh bisa kurang mewakili kondisi sebenarnya karena berada di antara dua daerah dengan nilai keanggotaan maksimum.
+Hal ini membuat waktu komputasi lebih singkat dan cocok digunakan pada sistem kontrol industri yang membutuhkan keputusan secara cepat dan terus-menerus.
 
-## I. Kesimpulan
+### 2. Apa syarat mutlak yang harus dipenuhi oleh fungsi keanggotaan konsekuen pada metode Tsukamoto? Mengapa kurva segitiga simetris tidak dapat digunakan sebagai konsekuen Tsukamoto?
 
-Berdasarkan praktikum yang telah dilakukan, dapat disimpulkan bahwa metode Mamdani merupakan metode inferensi fuzzy yang menggunakan operator MIN pada proses implikasi dan operator MAX pada proses agregasi. Hasil dari kedua proses tersebut kemudian diubah menjadi nilai tegas melalui tahap defuzzifikasi.
+**Jawaban:**
 
-Pada praktikum ini, digunakan lima metode defuzzifikasi, yaitu Centroid, Bisector, MOM, SOM, dan LOM. Setiap metode memiliki cara perhitungan dan karakteristik yang berbeda sehingga dapat menghasilkan nilai output yang berbeda meskipun menggunakan kurva agregasi yang sama.
+Syarat mutlak fungsi keanggotaan konsekuen pada metode Tsukamoto adalah harus bersifat monoton, yaitu selalu naik atau selalu turun. Hal ini diperlukan agar nilai keluaran *crisp* dapat dicari melalui proses invers berdasarkan nilai α-predikat setiap aturan.
 
-Melalui implementasi Python menggunakan Scikit-Fuzzy, proses pemotongan fungsi keanggotaan, agregasi, perhitungan defuzzifikasi, dan visualisasi dapat dilakukan dengan lebih mudah. Untuk sistem penentuan harga rumah, metode Centroid dapat digunakan karena mempertimbangkan seluruh daerah hasil agregasi dalam menentukan nilai akhir.
+Kurva segitiga simetris tidak dapat digunakan secara keseluruhan karena memiliki bagian yang naik dan turun, sehingga tidak monoton dan dapat menghasilkan lebih dari satu nilai keluaran untuk satu derajat keanggotaan.
 
-Dengan demikian, pemilihan metode defuzzifikasi perlu disesuaikan dengan kebutuhan sistem, tingkat ketelitian, dan karakteristik keputusan yang ingin dihasilkan.
+### 3. Pada kondisi apakah metode Sugeno Orde 1 menghasilkan akurasi yang lebih superior dibandingkan Sugeno Orde 0?
+
+**Jawaban:**
+
+Sugeno Orde 1 dapat menghasilkan akurasi yang lebih baik ketika hubungan antara input dan output bersifat kompleks atau berubah-ubah secara bertahap. Hal ini karena Sugeno Orde 1 menggunakan persamaan linear yang melibatkan variabel input, sedangkan Sugeno Orde 0 hanya menggunakan nilai konstanta sebagai output setiap aturan.
+
+Dengan demikian, Sugeno Orde 1 lebih mampu menggambarkan perubahan output berdasarkan kondisi input, terutama ketika hubungan tersebut mendekati pola linear.
+
+## J. Kesimpulan
+Metode Sugeno dan Tsukamoto menawarkan alternatif inferensi berkecepatan komputasi tinggi tanpa memerlukan defuzzifikasi integrasi numerik yang berat. Sugeno sangat unggul dalam aplikasi kontrol teknik dan integrasi sistem cerdas adaptif, sementara Tsukamoto memberikan penalaran transparan berbasis fungsi monotonik terbalik.
+

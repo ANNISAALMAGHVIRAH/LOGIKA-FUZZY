@@ -32,167 +32,150 @@ Setelah menyelesaikan praktikum ini, mahasiswa diharapkan mampu:
 1. Memahami prinsip kerja metode penalaran inferensi Mamdani (Max-Min).
 2. Melakukan proses implikasi pemotongan kurva (*clipping*) dan agregasi maksimum.
 3. Memahami dan mengimplementasikan lima metode defuzzifikasi, yaitu:
-   - Centroid (*Center of Gravity / COG*).
+   - Centroid (*Center of Gravity* atau COG).
    - Bisector (pembagi luas area seimbang).
    - Mean of Maximum (MOM).
    - Smallest of Maximum (SOM).
    - Largest of Maximum (LOM).
-4. Mengimplementasikan sistem Mamdani menggunakan Python dan pustaka Scikit-Fuzzy.
-5. Membandingkan perbedaan dan sensitivitas nilai output dari masing-masing metode defuzzifikasi.
+4. Mengimplementasikan sistem Mamdani menggunakan Python dan pustaka `scikit-fuzzy`.
+5. Membandingkan sensitivitas nilai output dari masing-masing metode defuzzifikasi.
 
 ## C. Requirement
 
-Perangkat dan aplikasi yang digunakan dalam praktikum ini adalah:
+Perangkat lunak yang digunakan dalam praktikum ini adalah:
 
-- **Sistem Operasi:** Windows 11 Home Single Language 64-bit (10.0, Build 26100).
-- **Browser:** Google Chrome Version 130.0.6723.117 (Official Build) (64-bit).
-- **Tools:** Visual Studio Code.
-- **Bahasa Pemrograman:** Python.
-- **Library:** NumPy, Matplotlib, dan Scikit-Fuzzy.
-
-Instalasi pustaka Scikit-Fuzzy dilakukan menggunakan perintah:
-
-```bash
-pip install scikit-fuzzy
-```
+| Komponen | Keterangan |
+|---|---|
+| Sistem Operasi | Windows 11 Home Single Language 64-bit (10.0, Build 26100) |
+| Browser | Google Chrome Version 130.0.6723.117 (Official Build) (64-bit) |
+| Tools | Visual Studio Code |
 
 ## D. Dasar Teori
 
 ### 1. Karakteristik Metode Mamdani
 
-Metode Mamdani merupakan salah satu metode inferensi fuzzy yang diperkenalkan oleh Ebrahim Mamdani pada tahun 1975. Metode ini banyak digunakan karena proses penalarannya mudah dipahami dan menggunakan aturan berbentuk IF-THEN.
+Metode Mamdani diperkenalkan oleh Ebrahim Mamdani pada tahun 1975. Metode ini merupakan salah satu metode inferensi fuzzy yang banyak digunakan karena cara kerjanya cukup mudah dipahami dan dapat menggambarkan proses penalaran manusia.
 
-Beberapa karakteristik utama metode Mamdani adalah:
+Ciri khas utama metode Mamdani adalah:
 
 1. **Konsekuen aturan:** Berupa himpunan fuzzy, bukan fungsi linear atau konstanta.
-2. **Implikasi:** Menggunakan operator Minimum (MIN) untuk memotong fungsi keanggotaan output berdasarkan nilai firing strength atau \(\alpha\)-predikat.
-3. **Agregasi:** Menggabungkan seluruh hasil implikasi aturan menggunakan operator Maksimum (MAX).
-4. **Defuzzifikasi:** Mengubah hasil agregasi fuzzy menjadi nilai tegas (*crisp output*) menggunakan metode tertentu.
+2. **Implikasi:** Menggunakan operator Minimum untuk memotong fungsi keanggotaan output sesuai nilai α-predikat.
+3. **Agregasi:** Menggabungkan seluruh kurva output menggunakan operator Maksimum.
+4. **Defuzzifikasi:** Mengubah hasil agregasi fuzzy menjadi nilai tegas (*crisp*) melalui perhitungan numerik.
 
-Rumus agregasi pada metode Mamdani adalah:
+Rumus agregasi metode Mamdani adalah:
 
 \[
-\mu_{\text{Agg}}(z)=
-\max_i
-\left[
-\min\left(\alpha_i,\mu_{C_i}(z)\right)
-\right]
+\mu_{\mathrm{Agg}}(z)=
+\max_i\left[\min\left(\alpha_i,\mu_{C_i}(z)\right)\right]
 \]
 
 Keterangan:
 
-- \(\mu_{\text{Agg}}(z)\) = derajat keanggotaan hasil agregasi.
-- \(\alpha_i\) = nilai firing strength aturan ke-i.
-- \(\mu_{C_i}(z)\) = fungsi keanggotaan output dari aturan ke-i.
-- MIN = operator untuk proses implikasi.
-- MAX = operator untuk proses agregasi.
+- \(\mu_{\mathrm{Agg}}(z)\) = derajat keanggotaan hasil agregasi.
+- \(\alpha_i\) = nilai firing strength atau α-predikat aturan ke-i.
+- \(\mu_{C_i}(z)\) = fungsi keanggotaan konsekuen aturan ke-i.
+- MIN = operator untuk memotong kurva.
+- MAX = operator untuk menggabungkan hasil pemotongan.
 
 ### 2. Ragam Metode Defuzzifikasi
 
-Setelah proses agregasi menghasilkan satu kurva fuzzy pada semesta output \(Z\), diperlukan proses defuzzifikasi untuk memperoleh satu nilai crisp yang mewakili hasil tersebut.
+Setelah kurva agregasi \(\mu_{\mathrm{Agg}}(z)\) terbentuk pada semesta output \(Z\), diperlukan proses defuzzifikasi untuk mendapatkan satu nilai tegas (*crisp*) yang mewakili hasil sistem fuzzy.
 
-Terdapat lima metode defuzzifikasi yang digunakan dalam praktikum ini.
+Berikut lima metode defuzzifikasi yang digunakan:
 
 #### a. Centroid (Center of Gravity / COG)
 
-Centroid merupakan metode yang menghitung titik pusat atau titik keseimbangan dari seluruh luas daerah hasil agregasi fuzzy. Metode ini mempertimbangkan seluruh bentuk kurva sehingga hasilnya cenderung lebih halus.
+Metode Centroid merupakan metode yang paling umum digunakan. Metode ini menghitung titik pusat berat dari seluruh luas daerah hasil agregasi fuzzy.
 
 Rumus:
 
 \[
-z^*_{\text{Centroid}}=
-\frac{\int z\cdot\mu_{\text{Agg}}(z)\,dz}
-{\int\mu_{\text{Agg}}(z)\,dz}
+z^*_{\mathrm{Centroid}}=
+\frac{\int z\cdot\mu_{\mathrm{Agg}}(z)\,dz}
+{\int\mu_{\mathrm{Agg}}(z)\,dz}
 \]
 
-Metode ini cocok digunakan ketika keputusan ingin mempertimbangkan seluruh daerah hasil agregasi.
+Metode ini mempertimbangkan seluruh bentuk kurva agregasi sehingga hasilnya cenderung lebih seimbang.
 
 #### b. Bisector
 
-Bisector merupakan metode yang mencari titik yang membagi luas daerah hasil agregasi menjadi dua bagian yang sama besar.
+Metode Bisector mencari nilai \(z^*\) yang membagi luas total daerah fuzzy menjadi dua bagian yang sama besar.
 
 Rumus:
 
 \[
-\int_{-\infty}^{z^*}\mu_{\text{Agg}}(z)\,dz
+\int_{-\infty}^{z^*}\mu_{\mathrm{Agg}}(z)\,dz
 =
-\int_{z^*}^{\infty}\mu_{\text{Agg}}(z)\,dz
+\int_{z^*}^{\infty}\mu_{\mathrm{Agg}}(z)\,dz
 \]
 
-Metode ini menghasilkan nilai yang membagi luas kurva fuzzy menjadi dua bagian seimbang.
+Dengan metode ini, luas daerah di sebelah kiri dan kanan titik hasil defuzzifikasi memiliki nilai yang sama.
 
 #### c. Mean of Maximum (MOM)
 
-MOM menghitung nilai rata-rata dari seluruh titik yang memiliki derajat keanggotaan maksimum.
+Metode MOM menghitung nilai rata-rata dari seluruh nilai \(z\) yang memiliki derajat keanggotaan maksimum.
 
 Rumus:
 
 \[
-z^*_{\text{MOM}}=
+z^*_{\mathrm{MOM}}=
 \frac{\sum_{z\in M}z}{|M|}
 \]
 
-Dengan:
+Keterangan:
 
 \[
 M=\{z\mid\mu(z)=\mu_{\max}\}
 \]
 
-Metode ini hanya memperhatikan titik-titik yang memiliki nilai keanggotaan tertinggi.
+Metode ini mengambil nilai tengah dari seluruh titik yang memiliki derajat keanggotaan tertinggi.
 
 #### d. Smallest of Maximum (SOM)
 
-SOM mengambil nilai terkecil atau paling kiri dari seluruh titik yang memiliki derajat keanggotaan maksimum.
+Metode SOM mengambil nilai \(z\) terkecil atau paling kiri yang memiliki derajat keanggotaan maksimum.
 
 Rumus:
 
 \[
-z^*_{\text{SOM}}=
+z^*_{\mathrm{SOM}}=
 \min\{z\mid\mu(z)=\mu_{\max}\}
 \]
 
-Metode ini memilih batas bawah dari daerah dengan keanggotaan tertinggi.
-
 #### e. Largest of Maximum (LOM)
 
-LOM mengambil nilai terbesar atau paling kanan dari seluruh titik yang memiliki derajat keanggotaan maksimum.
+Metode LOM mengambil nilai \(z\) terbesar atau paling kanan yang memiliki derajat keanggotaan maksimum.
 
 Rumus:
 
 \[
-z^*_{\text{LOM}}=
+z^*_{\mathrm{LOM}}=
 \max\{z\mid\mu(z)=\mu_{\max}\}
 \]
 
-Metode ini memilih batas atas dari daerah dengan keanggotaan tertinggi.
-
-### 3. Perbedaan Lima Metode Defuzzifikasi
-
-| Metode | Prinsip Perhitungan |
-|---|---|
-| Centroid | Menghitung titik pusat seluruh luas kurva agregasi. |
-| Bisector | Mencari titik yang membagi luas kurva menjadi dua bagian sama besar. |
-| MOM | Menghitung rata-rata seluruh titik dengan keanggotaan maksimum. |
-| SOM | Mengambil titik terkecil dengan keanggotaan maksimum. |
-| LOM | Mengambil titik terbesar dengan keanggotaan maksimum. |
-
 ## E. Implementasi dalam Python
 
-Pada praktikum ini, metode Mamdani diterapkan pada sistem penentuan harga rumah. Program menggunakan Scikit-Fuzzy untuk membuat fungsi keanggotaan dan menghitung lima metode defuzzifikasi.
+Pada bagian ini dilakukan simulasi metode inferensi Mamdani dengan menggunakan nilai *firing strength* dari beberapa skenario. Setiap aturan akan melalui proses implikasi MIN, kemudian hasilnya digabungkan menggunakan agregasi MAX.
 
-### 1. Import Library
+### 1. Instalasi Library
+
+Sebelum menjalankan program, instal pustaka `scikit-fuzzy` menggunakan perintah berikut:
+
+```bash
+pip install scikit-fuzzy
+```
+
+### 2. Program Python
 
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
 import skfuzzy as fuzz
-```
 
-Library NumPy digunakan untuk perhitungan numerik, Matplotlib untuk membuat grafik, dan Scikit-Fuzzy untuk membantu proses perhitungan fungsi keanggotaan serta defuzzifikasi.
+# ==========================================================
+# 1. DEFINISI SEMESTA DAN BENTUK KURVA AGREGASI
+# ==========================================================
 
-### 2. Menentukan Semesta Output dan Fungsi Keanggotaan
-
-```python
 # Semesta output: Harga Rumah (skala 1-23)
 z = np.arange(1, 23.01, 0.01)
 
@@ -211,13 +194,8 @@ mf_harga = {
     "Mahal": mf_mahal,
     "Sangat Mahal": mf_sangat_mahal
 }
-```
 
-Bagian ini menentukan rentang nilai output harga rumah dari skala 1 sampai 23. Selanjutnya, dibuat lima fungsi keanggotaan, yaitu Sangat Murah, Murah, Normal, Mahal, dan Sangat Mahal.
-
-### 3. Menentukan Skenario dan Firing Strength
-
-```python
+# Simulasi firing strength setiap skenario
 skenario = {
     "Skenario A": {
         "R01": (1.0, "Murah")
@@ -238,13 +216,8 @@ skenario = {
         "R27": (1.0, "Mahal")
     }
 }
-```
 
-Bagian ini menentukan nilai firing strength dan kategori output dari setiap aturan yang aktif pada tiga skenario pengujian. Setiap aturan memiliki nilai \(\alpha\) dan konsekuen yang digunakan untuk membentuk kurva agregasi.
-
-### 4. Melakukan Implikasi MIN dan Agregasi MAX
-
-```python
+# Proses implikasi MIN dan agregasi MAX
 kurva_agregasi = {}
 
 for nama_skenario, aturan in skenario.items():
@@ -266,20 +239,14 @@ for nama_skenario, aturan in skenario.items():
         )
 
     if np.max(agregasi) == 0:
-        raise ValueError(
-            f"Agregasi {nama_skenario} kosong!"
-        )
+        raise ValueError(f"Agregasi {nama_skenario} kosong!")
 
     kurva_agregasi[nama_skenario] = agregasi
-```
 
-Pada tahap ini, setiap fungsi keanggotaan output dipotong menggunakan nilai firing strength dengan operator MIN. Selanjutnya, hasil pemotongan dari seluruh aturan digabungkan menggunakan operator MAX.
+# ==========================================================
+# 2. PERHITUNGAN 5 METODE DEFUZZIFIKASI
+# ==========================================================
 
-Hasilnya adalah kurva agregasi yang digunakan sebagai dasar untuk menghitung nilai crisp.
-
-### 5. Menghitung Lima Metode Defuzzifikasi
-
-```python
 defuzz_methods = [
     'centroid',
     'bisector',
@@ -299,18 +266,17 @@ for nama_skenario, agregasi in kurva_agregasi.items():
         hasil[method] = val
 
     hasil_defuzz[nama_skenario] = hasil
-```
 
-Bagian ini menghitung lima metode defuzzifikasi untuk setiap skenario. Hasil perhitungan disimpan ke dalam variabel `hasil_defuzz` agar dapat ditampilkan dan dibandingkan.
+# ==========================================================
+# 3. MENAMPILKAN HASIL DAN VISUALISASI
+# ==========================================================
 
-### 6. Menampilkan Hasil Perhitungan
-
-```python
 print("=" * 70)
 print("HASIL KOMPARASI METODE DEFUZZIFIKASI MAMDANI")
 print("SISTEM PENENTUAN HARGA RUMAH")
 print("=" * 70)
 
+# Menampilkan hasil setiap skenario
 for nama_skenario, hasil in hasil_defuzz.items():
 
     print("\n", nama_skenario)
@@ -318,6 +284,7 @@ for nama_skenario, hasil in hasil_defuzz.items():
     for metode, nilai in hasil.items():
         print(f"Metode {metode.upper():<10}: {nilai:.3f}")
 
+# Menampilkan tabel perbandingan
 print("\nTABEL PERBANDINGAN HASIL")
 
 print(
@@ -339,13 +306,8 @@ for nama_skenario, hasil in hasil_defuzz.items():
         f"{hasil['som']:<12.3f}"
         f"{hasil['lom']:<12.3f}"
     )
-```
 
-Kode tersebut menampilkan hasil dari setiap metode defuzzifikasi, kemudian menyusun hasilnya ke dalam tabel perbandingan agar lebih mudah dianalisis.
-
-### 7. Visualisasi Hasil Defuzzifikasi
-
-```python
+# Warna setiap metode
 colors = {
     'centroid': 'red',
     'bisector': 'purple',
@@ -354,6 +316,7 @@ colors = {
     'lom': 'orange'
 }
 
+# Visualisasi setiap skenario
 for nama_skenario, agregasi in kurva_agregasi.items():
 
     plt.figure(figsize=(12, 6.5))
@@ -384,6 +347,7 @@ for nama_skenario, agregasi in kurva_agregasi.items():
             label=f'{method.upper()} ({val:.2f})'
         )
 
+        # Menampilkan titik hasil defuzzifikasi
         idx = np.abs(z - val).argmin()
 
         plt.scatter(
@@ -418,94 +382,78 @@ for nama_skenario, agregasi in kurva_agregasi.items():
     plt.show()
 ```
 
-Bagian ini menampilkan kurva agregasi fuzzy untuk setiap skenario. Garis vertikal dengan warna berbeda menunjukkan posisi hasil dari metode Centroid, Bisector, MOM, SOM, dan LOM.
+### 3. Output Program
 
-Dengan visualisasi tersebut, perbedaan posisi nilai akhir dari setiap metode dapat dilihat secara langsung.
+Program menghasilkan nilai defuzzifikasi untuk Skenario A, Skenario B, dan Skenario C. Hasilnya ditampilkan dalam bentuk teks dan tabel perbandingan.
+
+Selain itu, program menghasilkan tiga grafik yang memperlihatkan kurva agregasi fuzzy beserta posisi nilai dari masing-masing metode defuzzifikasi.
+
+**Nama file grafik yang dihasilkan:**
+
+- `komparasi_skenario_a.png`
+- `komparasi_skenario_b.png`
+- `komparasi_skenario_c.png`
+
+*Catatan: Nilai numerik output diperoleh setelah program dijalankan. Nilainya tidak dicantumkan di sini agar tidak menggunakan angka perkiraan yang belum diverifikasi dari hasil eksekusi.*
 
 ## F. Analisis Hasil Komparasi Metode
 
-Berdasarkan hasil pengujian pada Skenario B dalam sistem penentuan harga rumah, diperoleh perbandingan lima metode defuzzifikasi sebagai berikut.
+Berikut tabel perbandingan lima metode defuzzifikasi berdasarkan hasil pengujian pada Skenario B dalam sistem penentuan harga rumah.
 
 | Metode | Nilai Output | Karakteristik Utama | Rekomendasi pada Kasus Harga Rumah |
 |---|---:|---|---|
-| Centroid (COG) | ≈12,014 | Mempertimbangkan seluruh luas kurva agregasi. | Estimasi harga berdasarkan seluruh aturan yang aktif. |
-| Bisector | ≈11,830 | Membagi luas kurva agregasi menjadi dua bagian sama besar. | Estimasi dengan mempertimbangkan keseimbangan luas kurva. |
-| MOM | ≈11,000 | Mengambil rata-rata titik dengan derajat keanggotaan maksimum. | Estimasi berdasarkan nilai dengan keanggotaan tertinggi. |
-| SOM | ≈9,400 | Memilih batas bawah dari daerah dengan keanggotaan maksimum. | Estimasi dengan mengambil nilai yang lebih rendah. |
-| LOM | ≈12,600 | Memilih batas atas dari daerah dengan keanggotaan maksimum. | Estimasi dengan mengambil nilai yang lebih tinggi. |
+| Centroid (COG) | ≈ 12.014 | Halus dan kontinu, mempertimbangkan seluruh luas kurva agregasi. | Menentukan estimasi harga rumah berdasarkan seluruh aturan yang aktif. |
+| Bisector | ≈ 11.830 | Membagi luas kurva agregasi menjadi dua bagian yang sama besar. | Menentukan harga rumah dengan mempertimbangkan keseimbangan luas kurva. |
+| MOM | ≈ 11.000 | Mengambil nilai tengah dari daerah dengan derajat keanggotaan tertinggi. | Menentukan harga rumah berdasarkan nilai dengan keanggotaan tertinggi. |
+| SOM | ≈ 9.400 | Memilih batas bawah dari daerah dengan derajat keanggotaan tertinggi. | Menghasilkan estimasi harga rumah yang lebih rendah. |
+| LOM | ≈ 12.600 | Memilih batas atas dari daerah dengan derajat keanggotaan tertinggi. | Menghasilkan estimasi harga rumah yang lebih tinggi. |
 
-Berdasarkan tabel tersebut, Centroid menghasilkan nilai sekitar 12,014, sedangkan Bisector menghasilkan nilai sekitar 11,830. Kedua metode memiliki hasil yang berdekatan karena sama-sama mempertimbangkan luas daerah hasil agregasi.
+Berdasarkan tabel tersebut, Centroid menghasilkan nilai sekitar 12,014, sedangkan Bisector menghasilkan nilai sekitar 11,830. Kedua metode memiliki hasil yang berdekatan karena sama-sama mempertimbangkan luas kurva agregasi.
 
-MOM menghasilkan nilai sekitar 11,000 karena mengambil rata-rata titik yang memiliki derajat keanggotaan maksimum. Sementara itu, SOM menghasilkan nilai paling rendah, yaitu sekitar 9,400, dan LOM menghasilkan nilai paling tinggi, yaitu sekitar 12,600.
+MOM menghasilkan nilai 11,000 karena mengambil rata-rata titik dengan keanggotaan tertinggi. SOM menghasilkan nilai paling rendah, yaitu 9,400, sedangkan LOM menghasilkan nilai paling tinggi, yaitu 12,600.
 
-Perbedaan hasil tersebut menunjukkan bahwa pemilihan metode defuzzifikasi dapat memengaruhi nilai akhir yang dihasilkan oleh sistem meskipun menggunakan kurva agregasi yang sama.
+Nilai-nilai tersebut merupakan hasil perbandingan yang dicatat pada pengujian Skenario B. Untuk memastikan kesesuaiannya dengan program, angka perlu dicocokkan kembali dengan output saat kode dijalankan.
 
 ## G. Tugas Praktikum 7
 
 ### Studi Kasus: Sistem Penentuan Harga Rumah
 
-Pada tugas ini, metode Mamdani diterapkan untuk menentukan nilai harga rumah berdasarkan tiga konsekuen fuzzy, yaitu Murah, Normal, dan Mahal. Setiap konsekuen memiliki nilai firing strength yang berbeda.
+Pada tugas ini dilakukan simulasi sistem penentuan harga rumah menggunakan metode Mamdani. Variabel output yang digunakan adalah harga rumah dengan lima kategori, yaitu Sangat Murah, Murah, Normal, Mahal, dan Sangat Mahal.
 
-### 1. Import Library dan Menentukan Domain
+### 1. Program Python
 
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
 import skfuzzy as fuzz
-import pandas as pd
 
-# Menentukan domain harga rumah
+# 1. Menentukan domain harga rumah
 z = np.arange(1, 23.01, 0.01)
-```
 
-Library yang digunakan adalah NumPy, Matplotlib, Scikit-Fuzzy, dan Pandas. Domain harga rumah ditentukan pada rentang 1 sampai 23 dengan interval 0,01.
-
-### 2. Membuat Fungsi Keanggotaan Harga Rumah
-
-```python
+# 2. Membuat fungsi keanggotaan harga rumah
 sangat_murah = fuzz.trapmf(z, [1, 1, 3, 7])
 murah = fuzz.trimf(z, [3, 7, 11])
 normal = fuzz.trimf(z, [7, 11, 15])
 mahal = fuzz.trimf(z, [11, 15, 19])
 sangat_mahal = fuzz.trapmf(z, [15, 19, 23, 23])
-```
 
-Bagian ini membentuk lima kategori fungsi keanggotaan harga rumah menggunakan fungsi segitiga dan trapesium.
-
-### 3. Menentukan Nilai Firing Strength
-
-```python
+# 3. Menentukan nilai firing strength
 alpha_murah = 0.5
 alpha_normal = 0.8
 alpha_mahal = 0.2
-```
 
-Nilai firing strength ditentukan untuk tiga kategori output, yaitu Murah sebesar 0,5, Normal sebesar 0,8, dan Mahal sebesar 0,2.
-
-### 4. Melakukan Pemotongan Fungsi Keanggotaan
-
-```python
+# 4. Melakukan pemotongan fungsi keanggotaan
 potong_murah = np.fmin(alpha_murah, murah)
 potong_normal = np.fmin(alpha_normal, normal)
 potong_mahal = np.fmin(alpha_mahal, mahal)
-```
 
-Setiap fungsi keanggotaan output dipotong menggunakan operator MIN berdasarkan nilai firing strength masing-masing.
-
-### 5. Melakukan Agregasi MAX
-
-```python
+# 5. Menggabungkan hasil pemotongan dengan operator MAX
 agregasi = np.fmax(
     potong_murah,
     np.fmax(potong_normal, potong_mahal)
 )
-```
 
-Hasil pemotongan dari ketiga kategori kemudian digabungkan menggunakan operator MAX sehingga menghasilkan satu kurva agregasi fuzzy.
-
-### 6. Menghitung Lima Metode Defuzzifikasi
-
-```python
+# 6. Menghitung lima metode defuzzifikasi
 hasil = {
     "Centroid": fuzz.defuzz(z, agregasi, 'centroid'),
     "Bisector": fuzz.defuzz(z, agregasi, 'bisector'),
@@ -513,18 +461,14 @@ hasil = {
     "SOM": fuzz.defuzz(z, agregasi, 'som'),
     "LOM": fuzz.defuzz(z, agregasi, 'lom')
 }
-```
 
-Pada bagian ini dilakukan perhitungan menggunakan lima metode defuzzifikasi. Hasil setiap metode disimpan dalam dictionary `hasil`.
-
-### 7. Menampilkan Hasil Perhitungan
-
-```python
+# 7. Menampilkan hasil perhitungan
 print("HASIL DEFUZZIFIKASI HARGA RUMAH")
 
 for metode, nilai in hasil.items():
     print(f"{metode}: {nilai:.2f}")
 
+# 8. Membuat tabel perbandingan
 print("\nTABEL PERBANDINGAN")
 print("+------------------------+--------------+")
 print("| Metode Defuzzifikasi   | Nilai Output |")
@@ -534,13 +478,8 @@ for metode, nilai in hasil.items():
     print(f"| {metode:<22} | {nilai:>12.6f} |")
 
 print("+------------------------+--------------+")
-```
 
-Kode tersebut menampilkan hasil dari kelima metode defuzzifikasi dalam bentuk teks dan tabel agar perbedaannya lebih mudah dilihat.
-
-### 8. Membuat Grafik Visualisasi
-
-```python
+# 9. Membuat grafik visualisasi
 plt.figure(figsize=(12, 6))
 
 plt.plot(z, murah, label="Murah", linestyle="--")
@@ -549,7 +488,6 @@ plt.plot(z, mahal, label="Mahal", linestyle="--")
 
 plt.fill_between(
     z,
-    0,
     agregasi,
     alpha=0.3,
     label="Hasil Agregasi"
@@ -580,15 +518,21 @@ plt.savefig(
 plt.show()
 ```
 
-Grafik tersebut menampilkan fungsi keanggotaan Murah, Normal, dan Mahal beserta daerah agregasi. Garis vertikal menunjukkan hasil dari setiap metode defuzzifikasi sehingga perbedaan nilai output dapat dibandingkan secara visual.
+### 2. Output Program
 
-### 9. Analisis Tugas Praktikum
+Program menampilkan hasil perhitungan dari lima metode defuzzifikasi, yaitu Centroid, Bisector, MOM, SOM, dan LOM. Hasil perhitungan juga ditampilkan dalam bentuk tabel dan grafik.
 
-Berdasarkan hasil pengujian, metode yang paling sesuai untuk sistem penentuan harga rumah adalah Centroid. Metode ini menghitung titik keseimbangan dari seluruh daerah hasil agregasi fuzzy.
+Grafik memperlihatkan fungsi keanggotaan kategori Murah, Normal, dan Mahal, serta garis vertikal yang menunjukkan hasil dari masing-masing metode defuzzifikasi.
 
-Dengan demikian, seluruh kategori harga yang aktif, seperti Murah, Normal, dan Mahal, ikut diperhitungkan dalam menentukan nilai akhir. Metode Centroid juga memberikan hasil yang mempertimbangkan bentuk keseluruhan kurva, bukan hanya titik dengan derajat keanggotaan tertinggi.
+**Nama file grafik:**
 
-Namun, pemilihan metode tetap perlu disesuaikan dengan kebutuhan sistem. Jika sistem membutuhkan proses yang lebih sederhana, metode lain seperti MOM dapat menjadi alternatif.
+`defuzzifikasi_tugas_8_harga_rumah.png`
+
+### 3. Analisis Hasil Tugas
+
+Berdasarkan simulasi yang dilakukan, metode yang paling sesuai untuk digunakan dalam sistem penentuan harga rumah adalah Centroid. Metode ini menghitung titik keseimbangan dari seluruh daerah hasil agregasi fuzzy.
+
+Dengan demikian, semua kategori harga yang aktif, seperti Murah, Normal, dan Mahal, ikut diperhitungkan dalam menentukan nilai akhir. Hasilnya dapat memberikan estimasi harga rumah yang mempertimbangkan keseluruhan bentuk kurva agregasi.
 
 ## H. Pertanyaan Analisis
 
@@ -596,32 +540,26 @@ Namun, pemilihan metode tetap perlu disesuaikan dengan kebutuhan sistem. Jika si
 
 **Jawaban:**
 
-Metode Centroid membutuhkan perhitungan luas dan titik keseimbangan dari seluruh kurva hasil agregasi. Perhitungannya melibatkan banyak operasi matematika, seperti perkalian, penjumlahan, dan pembagian pada setiap titik data.
+Metode Centroid membutuhkan perhitungan luas dan titik keseimbangan dari seluruh kurva hasil agregasi. Perhitungannya melibatkan banyak operasi matematika, seperti perkalian, penjumlahan, dan pembagian.
 
-Sementara itu, metode MOM hanya mencari titik-titik yang memiliki derajat keanggotaan paling tinggi, kemudian menghitung nilai rata-ratanya. Karena prosesnya lebih sederhana, MOM membutuhkan komputasi yang lebih ringan dibandingkan Centroid.
+Sementara itu, metode MOM hanya mencari nilai rata-rata dari titik-titik yang memiliki derajat keanggotaan paling tinggi. Karena prosesnya lebih sederhana, MOM membutuhkan komputasi yang lebih ringan dibandingkan Centroid.
 
 ### 2. Dalam skenario darurat (*emergency braking system* pada mobil otonom), metode manakah antara SOM dan LOM yang lebih tepat digunakan untuk menentukan besarnya gaya rem? Jelaskan implikasi keselamatannya!
 
 **Jawaban:**
 
-Pemilihan metode SOM atau LOM harus disesuaikan dengan arti nilai output yang digunakan oleh sistem. Jika nilai output yang lebih kecil mewakili gaya pengereman yang lebih kuat, maka SOM dapat dipilih karena mengambil nilai terkecil dari daerah dengan derajat keanggotaan maksimum.
+Metode SOM lebih tepat jika nilai output yang lebih kecil mewakili gaya pengereman yang lebih kuat. Dengan memilih nilai terkecil dari titik yang memiliki derajat keanggotaan maksimum, sistem dapat memberikan pengereman yang lebih kuat untuk mengurangi risiko tabrakan.
 
-Namun, sistem pengereman tidak boleh hanya mengandalkan pemilihan nilai terkecil. Kondisi kendaraan, kecepatan, permukaan jalan, dan risiko roda terkunci juga harus diperhitungkan agar pengereman tetap aman dan kendaraan tidak kehilangan kendali.
+Namun, penerapannya harus tetap mempertimbangkan kondisi kendaraan dan jalan agar tidak menyebabkan roda terkunci atau kendaraan kehilangan kendali. Pemilihan metode juga harus disesuaikan dengan definisi nilai output pada sistem pengereman tersebut.
 
 ### 3. Jika kurva agregasi memiliki dua puncak terpisah yang simetris (*bimodal distribution*), apakah kelemahan metode MOM?
 
 **Jawaban:**
 
-Kelemahan metode MOM adalah menghasilkan nilai rata-rata dari seluruh titik yang memiliki derajat keanggotaan maksimum. Jika terdapat dua puncak yang terpisah dan simetris, hasil MOM bisa berada di tengah-tengah kedua puncak tersebut.
+Kelemahan metode MOM adalah menghasilkan nilai rata-rata dari semua titik yang memiliki derajat keanggotaan maksimum. Jika terdapat dua puncak yang terpisah dan simetris, hasil MOM bisa berada di tengah-tengah kedua puncak tersebut.
 
-Padahal, nilai tengah tersebut belum tentu memiliki derajat keanggotaan yang tinggi. Akibatnya, hasil yang diperoleh bisa kurang mewakili kondisi sebenarnya karena berada di antara dua daerah dengan nilai keanggotaan maksimum.
+Padahal, nilai tengah tersebut belum tentu memiliki derajat keanggotaan yang tinggi. Akibatnya, hasil yang diperoleh bisa kurang mewakili kondisi sebenarnya.
 
 ## I. Kesimpulan
 
-Berdasarkan praktikum yang telah dilakukan, dapat disimpulkan bahwa metode Mamdani merupakan metode inferensi fuzzy yang menggunakan operator MIN pada proses implikasi dan operator MAX pada proses agregasi. Hasil dari kedua proses tersebut kemudian diubah menjadi nilai tegas melalui tahap defuzzifikasi.
-
-Pada praktikum ini, digunakan lima metode defuzzifikasi, yaitu Centroid, Bisector, MOM, SOM, dan LOM. Setiap metode memiliki cara perhitungan dan karakteristik yang berbeda sehingga dapat menghasilkan nilai output yang berbeda meskipun menggunakan kurva agregasi yang sama.
-
-Melalui implementasi Python menggunakan Scikit-Fuzzy, proses pemotongan fungsi keanggotaan, agregasi, perhitungan defuzzifikasi, dan visualisasi dapat dilakukan dengan lebih mudah. Untuk sistem penentuan harga rumah, metode Centroid dapat digunakan karena mempertimbangkan seluruh daerah hasil agregasi dalam menentukan nilai akhir.
-
-Dengan demikian, pemilihan metode defuzzifikasi perlu disesuaikan dengan kebutuhan sistem, tingkat ketelitian, dan karakteristik keputusan yang ingin dihasilkan.
+Metode Mamdani memberikan representasi penalaran manusia yang alami dengan konsekuen berbentuk himpunan fuzzy. Pemilihan metode defuzzifikasi yang tepat (Centroid, Bisector, MOM, SOM, atau LOM) memungkinkan perancang sistem menyesuaikan profil keputusan: apakah netral-kontinu, konservatif, agresif, atau mengutamakan titik kepastian tertinggi.

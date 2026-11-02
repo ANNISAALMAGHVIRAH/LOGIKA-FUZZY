@@ -20,7 +20,6 @@ def trimf(x, params):
     y[x == b] = 1
     return np.clip(y, 0, 1)
 
-
 def trapmf(x, params):
     a, b, c, d = params
     y = np.zeros_like(x, dtype=float)
@@ -37,7 +36,6 @@ def trapmf(x, params):
         y[idx] = (d - x[idx]) / (d - c)
 
     return np.clip(y, 0, 1)
-
 
 # ==========================================================
 # 2. MEMBANGUN KELAS FUZZY INFERENCE SYSTEM
@@ -134,7 +132,6 @@ class FuzzyInferenceSystem:
 
         return crisp_output
 
-
 # ==========================================================
 # 3. MENENTUKAN DOMAIN VARIABEL
 # ==========================================================
@@ -142,7 +139,6 @@ class FuzzyInferenceSystem:
 universe_lama = np.linspace(0, 24, 241)
 universe_frekuensi = np.linspace(0, 15, 151)
 universe_diskon = np.linspace(0, 30, 301)
-
 
 # ==========================================================
 # 4. FUNGSI KEANGGOTAAN INPUT
@@ -160,7 +156,6 @@ mf_frekuensi = {
     "Tinggi": trapmf(universe_frekuensi, [9, 13, 15, 15])
 }
 
-
 # ==========================================================
 # 5. FUNGSI KEANGGOTAAN OUTPUT DISKON
 # ==========================================================
@@ -170,7 +165,6 @@ mf_diskon = {
     "Sedang": trimf(universe_diskon, [8, 15, 22]),
     "Tinggi": trapmf(universe_diskon, [18, 25, 30, 30])
 }
-
 
 # ==========================================================
 # 6. MEMBUAT OBJEK SISTEM FUZZY
@@ -196,7 +190,6 @@ fis.set_output_variable(
     mf_diskon
 )
 
-
 # ==========================================================
 # 7. MENAMBAHKAN 9 ATURAN FUZZY
 # ==========================================================
@@ -216,7 +209,6 @@ rules = [
 for rule in rules:
     fis.add_rule(rule)
 
-
 # ==========================================================
 # 8. TIGA KASUS PENGUJIAN
 # ==========================================================
@@ -226,7 +218,6 @@ kasus = [
     {"Lama Langganan": 12, "Frekuensi Transaksi": 6},
     {"Lama Langganan": 24, "Frekuensi Transaksi": 15}
 ]
-
 
 # ==========================================================
 # 9. MENAMPILKAN HASIL DAN GRAFIK SETIAP KASUS
@@ -373,7 +364,6 @@ for nomor, data in enumerate(kasus, start=1):
 
     for i, alpha in enumerate(firing, start=1):
         print(f"R{i}: α = {alpha:.4f}")
-
 
 print("=" * 55)
 print("SELURUH PENGUJIAN SELESAI")

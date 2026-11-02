@@ -820,4 +820,28 @@ Pengujian dilakukan menggunakan lima skenario dengan kombinasi nilai lokasi, lua
 
 ## 6.4 Analisis Hasil Pengujian
 
-Berd
+Berdasarkan hasil pengujian, setiap kombinasi input menghasilkan estimasi harga rumah yang berbeda.
+
+Pada skenario pertama, rumah dengan lokasi bernilai 5, luas tanah 50 m², dan luas bangunan 30 m² menghasilkan estimasi harga sebesar Rp700.000.000.
+
+Sementara itu, skenario kedua menggunakan luas tanah dan luas bangunan yang sama, tetapi nilai lokasinya 45. Hasil estimasi harganya menjadi lebih rendah, yaitu Rp313.950.617.
+
+Pada skenario ketiga, dengan lokasi 25, luas tanah 120 m², dan luas bangunan 80 m², sistem menghasilkan estimasi harga sebesar Rp1.100.000.000.
+
+Skenario keempat menghasilkan estimasi harga tertinggi, yaitu Rp1.991.487.603. Hal ini dipengaruhi oleh lokasi yang sangat strategis serta ukuran tanah dan bangunan yang besar.
+
+Pada skenario kelima, luas tanah dan luas bangunan sama dengan skenario keempat, tetapi nilai lokasinya berbeda. Hasil estimasi harga menjadi Rp1.500.000.000.
+
+Perbandingan skenario pertama dengan kedua serta skenario keempat dengan kelima menunjukkan bahwa perbedaan nilai lokasi dapat memengaruhi hasil estimasi harga rumah meskipun luas tanah dan luas bangunannya sama.
+
+Secara keseluruhan, hasil pengujian menunjukkan bahwa ketiga variabel input, yaitu lokasi, luas tanah, dan luas bangunan, memengaruhi estimasi harga rumah berdasarkan aturan fuzzy yang telah dirancang.
+
+7. RENCANA INTEGRASI KE APLIKASI WEB (TAHAP MODUL 3)
+
+Pada Modul 3, sistem penentuan harga rumah direncanakan untuk dikembangkan menjadi aplikasi berbasis web menggunakan Streamlit.
+
+Rencana integrasi meliputi penyediaan halaman input untuk memasukkan nilai lokasi, luas tanah, dan luas bangunan. Selanjutnya, input pengguna akan dihubungkan dengan fungsi evaluasi_sistem_fuzzy() agar data diproses menggunakan metode Fuzzy Mamdani berdasarkan 27 aturan yang tersedia.
+
+Hasil perhitungan berupa nilai defuzzifikasi dan estimasi harga rumah dalam rupiah akan ditampilkan pada halaman hasil. Dengan integrasi tersebut, pengguna dapat memperoleh estimasi harga rumah melalui aplikasi web tanpa harus menjalankan program Python secara langsung.
+
+

@@ -605,14 +605,9 @@ Hal ini berbeda dengan struktur `if-elif-else` pada pemrograman imperatif. Pada 
 Dengan demikian, sistem fuzzy memungkinkan beberapa aturan aktif secara bersamaan dan hasilnya dapat digabungkan melalui proses agregasi. Sementara itu, struktur `if-elif-else` hanya menjalankan satu cabang kondisi pertama yang terpenuhi.
 
 ## 7. Kesimpulan
+Basis aturan fuzzy merepresentasikan kepakaran manusia ke dalam bentuk formal komputasi. Setiap aturan mengevaluasi derajat kecocokan kondisinya secara independen dan paralel melalui nilai firing strength 
+α
+. Tahap evaluasi aturan ini menjadi jembatan krusial antara input fuzzifikasi dan pembentukan output keputusan pada Fuzzy Inference System.
 
-Berdasarkan praktikum yang telah dilakukan, dapat disimpulkan bahwa:
-
-1. Aturan fuzzy IF-THEN digunakan untuk menggambarkan hubungan antara kondisi input dan hasil keputusan melalui bagian *Antecedent* dan *Consequent*.
-2. Basis aturan pada sistem penentuan harga rumah terdiri dari 27 aturan yang diperoleh dari kombinasi tiga variabel input, yaitu lokasi, luas tanah, dan luas bangunan.
-3. Nilai *Firing Strength* digunakan untuk mengetahui seberapa kuat suatu aturan aktif. Pada aturan dengan operator AND, perhitungan dilakukan menggunakan metode MIN.
-4. Hasil pengujian menunjukkan bahwa beberapa aturan dapat aktif secara bersamaan apabila nilai derajat keanggotaan input lebih dari nol.
-5. Aturan yang tidak aktif memiliki nilai alpha sebesar 0, sedangkan aturan yang aktif memiliki nilai alpha lebih dari 0.
-6. Implementasi Python membantu menyimpan basis aturan dan mengevaluasi setiap aturan secara sistematis berdasarkan derajat keanggotaan input.
 
 Dengan demikian, praktikum ini memberikan pemahaman mengenai penyusunan *Rule Base*, perhitungan *Firing Strength*, serta evaluasi aturan fuzzy sebagai bagian penting dalam proses pengambilan keputusan menggunakan *Fuzzy Inference System*.

@@ -836,7 +836,7 @@ Perbandingan skenario pertama dengan kedua serta skenario keempat dengan kelima 
 
 Secara keseluruhan, hasil pengujian menunjukkan bahwa ketiga variabel input, yaitu lokasi, luas tanah, dan luas bangunan, memengaruhi estimasi harga rumah berdasarkan aturan fuzzy yang telah dirancang.
 
-7. RENCANA INTEGRASI KE APLIKASI WEB (TAHAP MODUL 3)
+# 7. RENCANA INTEGRASI KE APLIKASI WEB (TAHAP MODUL 3)
 
 Pada Modul 3, sistem penentuan harga rumah direncanakan untuk dikembangkan menjadi aplikasi berbasis web menggunakan Streamlit.
 
